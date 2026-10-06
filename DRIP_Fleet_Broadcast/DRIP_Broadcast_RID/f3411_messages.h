@@ -16,7 +16,9 @@
 #define F3411_TYPE_BASIC_ID  0x0
 #define F3411_TYPE_LOCATION  0x1
 #define F3411_TYPE_AUTH      0x2
+#define F3411_TYPE_SELF_ID   0x3   // ASTM F3411-22a §5.4.5.16, Table 10 (session 3)
 #define F3411_TYPE_SYSTEM    0x4
+#define F3411_TYPE_OPERATOR_ID 0x5 // ASTM F3411-22a §5.4.5.20, Table 12 (session 3)
 #define F3411_TYPE_MSG_PACK  0xF
 
 #define F3411_PROTO_VER      0x2
@@ -51,12 +53,19 @@
 // DRIP_EPOCH_UNIX_S converts between Unix epoch (1970) and DRIP epoch (2019).
 //
 // SIM_DRIP_TIME_BASE is an approximate "now" in the DRIP epoch for simulation.
-// Update it before each test session:
+// The board has no RTC, no GNSS and no NTP, so every timestamp it emits is this
+// constant plus the seconds since boot. Update it before each test session:
 //   SIM_DRIP_TIME_BASE = <current Unix time> - DRIP_EPOCH_UNIX_S
-// Example for May 2025:  1748000000 - 1546300800 = 201699200
+// Worked: 2026-01-01T00:00:00Z is Unix 1767225600, and
+//         1767225600 - 1546300800 = 220924800.
+//
+// A base in the past makes every validity window the firmware signs expire
+// before an Observer using real time ever sees it, which is why a live run
+// against a stored capture reports E-LINK-04 on every endorsement. That is a
+// property of this constant, not of the protocol.
 // ---------------------------------------------------------------------------
 #define DRIP_EPOCH_UNIX_S    1546300800UL
-#define SIM_DRIP_TIME_BASE   201699200UL   // ≈ May 2025 — UPDATE before testing
+#define SIM_DRIP_TIME_BASE   220924800UL   // 2026-01-01 — UPDATE before testing
 #define DRIP_VNA_OFFSET_S    120UL         // RFC 9575 §3.2.4.3 recommended offset
 
 // drip_timestamp() is declared in drip_time.h (requires Arduino.h)
@@ -121,6 +130,26 @@ struct __attribute__((packed)) F3411System {
 };
 static_assert(sizeof(F3411System) == 25, "");
 
+// Self-ID Message — ASTM F3411-22a §5.4.5.16 / Table 10 (added session 3)
+// Static, optional. RFC 9575 §6.4 lists it as an "other ASTM Message" to send
+// once per second under Legacy Transport.
+struct __attribute__((packed)) F3411SelfID {
+    uint8_t  type_ver;          // (TYPE_SELF_ID << 4) | PROTO_VER = 0x32
+    uint8_t  desc_type;         // 0 Text, 1 Emergency, 2 Extended Status (Table 10)
+    char     description[23];   // ASCII, null padded (Table 10)
+};
+static_assert(sizeof(F3411SelfID) == 25, "");
+
+// Operator-ID Message — ASTM F3411-22a §5.4.5.20 / Table 12 (added session 3)
+// Static, optional; carries "the CAA issued Operator ID" (§5.4.5.21).
+struct __attribute__((packed)) F3411OperatorID {
+    uint8_t  type_ver;          // (TYPE_OPERATOR_ID << 4) | PROTO_VER = 0x52
+    uint8_t  op_id_type;        // 0 = Operator ID (Table 12)
+    char     operator_id[20];   // ASCII, null padded (Table 12)
+    uint8_t  reserved[3];       // Table 12 offset 22, length 3
+};
+static_assert(sizeof(F3411OperatorID) == 25, "");
+
 // ---------------------------------------------------------------------------
 // Drone position passed in by flight_sim — used by the encoders
 // ---------------------------------------------------------------------------
@@ -147,6 +176,13 @@ F3411Location f3411_build_location(const DronePosition &pos);
 
 // op_lat/op_lon = operator position (usually launch point)
 F3411System f3411_build_system(double op_lat, double op_lon, float op_alt_m);
+
+// Self ID (Table 10): description is copied up to 23 characters, the rest
+// null-padded. Longer text is truncated, never overrun.
+F3411SelfID f3411_build_self_id(uint8_t desc_type, const char *description);
+
+// Operator ID (Table 12): id is copied up to 20 characters, null-padded.
+F3411OperatorID f3411_build_operator_id(uint8_t op_id_type, const char *operator_id);
 
 // Utility: encode altitude per F3411 (alt_m → uint16)
 uint16_t f3411_encode_altitude(float alt_m);

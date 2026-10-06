@@ -209,12 +209,20 @@ DronePosition drone_playback_next(PlaybackState *st, uint32_t live_unix_time_s,
     // *** TEST-ONLY (see drone_playback.h) ***
     // Replay the dataset's RECORDED timestamp instead of the live clock. This
     // reaches ONLY the ASTM Location message timestamp (f3411_messages.cpp:
-    // `(unix_time_s % 3600) * 10`, i.e. tenths of a second within the UTC hour).
-    // DRIP VNB/VNA come from drip_timestamp() and stay on the live clock, so the
-    // Wrapper / Link / Manifest signatures remain RFC 9575 §3.2.4.3 conformant.
+    // `(unix_time_s % 3600) * 10`, i.e. tenths of a second within the UTC hour),
+    // and it makes that field disagree with every other timestamp in the pack.
     pos.unix_time_s = ts_rec;
 #else
-    pos.unix_time_s = live_unix_time_s;   // RFC-conformant: broadcast time is now
+    // RFC-conformant: the broadcast time is now. `live_unix_time_s` is
+    // drip_timestamp() converted to the Unix epoch by the caller, so the
+    // Location timestamp, the System timestamp, the Authentication header
+    // timestamp and the VNB/VNA of every DRIP structure all derive from the one
+    // clock and agree with each other.
+    //
+    // `ts_rec` is still read above, and still paces the cursor. The recorded
+    // track decides which point is emitted and when; it no longer decides what
+    // time the aircraft claims it is.
+    pos.unix_time_s = live_unix_time_s;
 #endif
     // When finished, velocity stays zero (aircraft reported as stationary).
     if (st->finished) { pos.speed_mps = 0; pos.vspeed_mps = 0; pos.heading_deg = 0; }

@@ -57,6 +57,13 @@ static const uint8_t HDA_SEED[32] = DRIP_HDA_SEED_INIT;
 // ---------------------------------------------------------------------------
 static BroadcastEndorsement g_be_apex_raa;                        // child = RAA, parent = Apex
 static BroadcastEndorsement g_be_raa_hda;                         // child = HDA, parent = RAA
+// Chain C (session 3): Apex -> RAA C -> HDA C, for identity 4. Air-only: none
+// of these is in hierarchy.json (drip_hierarchy.h, "CHAIN C").
+static const uint8_t RAA_C_SEED[32] = DRIP_RAA_C_SEED_INIT;
+static const uint8_t HDA_C_SEED[32] = DRIP_HDA_C_SEED_INIT;
+static BroadcastEndorsement g_be_apex_raac;                       // child = RAA C, parent = Apex
+static BroadcastEndorsement g_be_raac_hdac;                       // child = HDA C, parent = RAA C
+static uint8_t              g_slot_chain[DET_IDENTITY_SLOTS];     // DET_CHAIN_* per slot
 static BroadcastEndorsement g_be_hda_ua[DET_IDENTITY_SLOTS];      // child = UA_i, parent = HDA
 static bool                 g_slot_ready[DET_IDENTITY_SLOTS];
 static uint8_t              g_rot_idx[DET_IDENTITY_SLOTS];        // per-slot Cycle-B cursor
@@ -130,11 +137,31 @@ void drip_reg_init_fleet(const DETIdentity *ids, uint8_t n, bool verbose) {
     // BE: RAA,HDA — child = HDA, signed by RAA
     make_be(&g_be_raa_hda,  vnb, vna, det_hda, hda_pub, det_raa,  RAA_SEED,  raa_pub);
 
+    // ---- chain C (session 3): Apex -> RAA C -> HDA C, air-only ---------------
+    uint8_t raac_pub[32], hdac_pub[32], det_raac[DET_BYTES], det_hdac[DET_BYTES];
+    Ed25519::derivePublicKey(raac_pub, (uint8_t *)RAA_C_SEED);
+    Ed25519::derivePublicKey(hdac_pub, (uint8_t *)HDA_C_SEED);
+    det_compute(raac_pub, DRIP_RAA_C_RAA, DRIP_RAA_C_HDA, det_raac);
+    det_compute(hdac_pub, DRIP_HDA_C_RAA, DRIP_HDA_C_HDA, det_hdac);
+    make_be(&g_be_apex_raac, vnb, vna, det_raac, raac_pub, det_apex, APEX_SEED,  apex_pub);
+    make_be(&g_be_raac_hdac, vnb, vna, det_hdac, hdac_pub, det_raac, RAA_C_SEED, raac_pub);
+
     // ---- one leaf BE per UA (RFC 9575 §6.4.2: every UA must chain up) -------
     for (uint8_t s = 0; s < n; s++) {
+        // Each slot's leaf is signed by the HDA of ITS identity's chain.
+        const bool chain_c = (ids[s].chain == DET_CHAIN_C);
+        g_slot_chain[s] = chain_c ? DET_CHAIN_C : DET_CHAIN_A;
         make_be(&g_be_hda_ua[s], vnb, vna,
-                ids[s].det, ids[s].pubkey,     // child = this UA
-                det_hda, HDA_SEED, hda_pub);   // parent = the shared HDA
+                ids[s].det, ids[s].pubkey,                     // child = this UA
+                chain_c ? det_hdac : det_hda,                  // parent = its HDA
+                chain_c ? HDA_C_SEED : HDA_SEED,
+                chain_c ? hdac_pub : hda_pub);
+        if (ids[s].test_flag == DET_FLAG_BAD_ENDORSEMENT) {
+            // DELIBERATE FAULT (identity 5): one signature bit flipped AFTER
+            // signing, so the endorsement no longer verifies (RFC 9575 §4.2).
+            // The Observer must report E-LINK-02 and learn no key from it.
+            g_be_hda_ua[s].sig[0] ^= 0x01;
+        }
         g_slot_ready[s] = true;
     }
 
@@ -150,12 +177,20 @@ void drip_reg_init_fleet(const DETIdentity *ids, uint8_t n, bool verbose) {
     det_print("[REG] Apex DET: ", det_apex);
     det_print("[REG] RAA  DET: ", det_raa);
     det_print("[REG] HDA  DET: ", det_hda);
+    det_print("[REG] RAA C DET (air-only): ", det_raac);
+    det_print("[REG] HDA C DET (air-only): ", det_hdac);
     Serial.printf("[REG] chain signed: 2 shared links + %u leaf BE(s). VNB=%u VNA=%u\n",
                   (unsigned)n, vnb, vna);
     for (uint8_t s = 0; s < n; s++) {
         char lbl[24];
         snprintf(lbl, sizeof(lbl), "[REG]  BE:HDA,UA[%u] -> ", (unsigned)s);
         det_print(lbl, g_be_hda_ua[s].det_child);
+        if (ids[s].test_flag != DET_FLAG_NONE || ids[s].chain == DET_CHAIN_C)
+            Serial.printf("[REG]        slot %u = identity %u%s%s%s\n", (unsigned)s,
+                          (unsigned)ids[s].index,
+                          ids[s].chain == DET_CHAIN_C ? "  [chain C, air-only]" : "",
+                          ids[s].test_flag == DET_FLAG_BAD_DET_HASH ? "  [MALFORMED DET]" : "",
+                          ids[s].test_flag == DET_FLAG_BAD_ENDORSEMENT ? "  [BAD ENDORSEMENT SIG]" : "");
     }
 }
 
@@ -174,9 +209,11 @@ const BroadcastEndorsement *drip_reg_next_link(uint8_t slot) {
     uint8_t sel = pattern[g_rot_idx[slot]];
     g_rot_idx[slot] = (uint8_t)((g_rot_idx[slot] + 1) % 6);
 
+    // The upper links are those of the slot's own chain (session 3).
+    const bool chain_c = (g_slot_chain[slot] == DET_CHAIN_C);
     switch (sel) {
-        case 1:  return &g_be_raa_hda;
-        case 2:  return &g_be_apex_raa;
+        case 1:  return chain_c ? &g_be_raac_hdac : &g_be_raa_hda;
+        case 2:  return chain_c ? &g_be_apex_raac : &g_be_apex_raa;
         default: return &g_be_hda_ua[slot];
     }
 }

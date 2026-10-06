@@ -63,3 +63,12 @@ uint8_t drip_link_build_be(const BroadcastEndorsement *be,
 // Used by the Manifest to hash BE:HDA,UA per RFC §4.4.2.
 void drip_link_serialize_sam(const BroadcastEndorsement *be,
                              uint8_t sam[DRIP_LINK_SAM_BYTES]);
+
+// Legacy Transport (Bluetooth 4.x): the same BE, paged with DRIP Single Page
+// FEC (RFC 9575 §5.1, mandatory on Legacy per §6.1). 137 octets -> 7 data
+// pages + 1 FEC page = 8. The fleet sends ONE page per second (RFC 9575 §6.4),
+// all pages under one Message Counter (ASTM §5.4.4.2, BUR0060).
+#define DRIP_LINK_FEC_PAGES   8
+uint8_t drip_link_build_be_fec(const BroadcastEndorsement *be,
+                               uint8_t out[][F3411_MSG_BYTES],
+                               uint8_t max_pages);

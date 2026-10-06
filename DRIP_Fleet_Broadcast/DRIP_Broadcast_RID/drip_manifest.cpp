@@ -140,3 +140,83 @@ bool drip_manifest_build(DRIPManifestState *state,
 
     return sign_ok;
 }
+
+// ===========================================================================
+// Legacy Transport (Bluetooth 4.x) Manifest — see drip_manifest.h.
+// ===========================================================================
+void drip_manifest_note_message(DRIPManifestState *state,
+                                const uint8_t      msg[F3411_MSG_BYTES]) {
+    uint8_t h[8];
+    manifest_hash8(msg, F3411_MSG_BYTES, h);          // RFC 9575 §4.4.3, one message
+    for (uint8_t i = 0; i < state->msg_hash_count; i++)
+        if (memcmp(state->msg_hashes[i], h, 8) == 0) return;   // already listed
+    if (state->msg_hash_count >= MANIFEST_LEGACY_MAX_HASHES) {
+        Serial.println("[Manifest] WARN: legacy hash list full (RFC 9575 4.4 max 10); "
+                       "message not covered by the next Manifest");
+        return;
+    }
+    memcpy(state->msg_hashes[state->msg_hash_count++], h, 8);
+}
+
+bool drip_manifest_build_legacy(DRIPManifestState *state,
+                                const DETIdentity &id,
+                                uint8_t            out[][F3411_MSG_BYTES],
+                                uint8_t            max_pages,
+                                uint8_t           *page_count_out) {
+    *page_count_out = 0;
+    const uint8_t n        = state->msg_hash_count;
+    const uint8_t ev_len   = (uint8_t)(24 + 8 * n);           // 3 ledger + N hashes
+    const uint8_t pay_len  = (uint8_t)(1 + 4 + 4 + ev_len + DET_BYTES + 64);
+
+    uint32_t vnb = drip_timestamp();
+    uint32_t vna = vnb + DRIP_VNA_OFFSET_S;                   // RFC 9575 §3.2.4.3
+
+    // ----- Evidence: Previous | Current(null) | Link | message hashes -----
+    uint8_t evidence[24 + 8 * MANIFEST_LEGACY_MAX_HASHES];
+    memcpy(&evidence[0],  state->prev_manifest_hash, 8);
+    memset(&evidence[8],  0x00,                      8);
+    memcpy(&evidence[16], state->link_hash,          8);
+    for (uint8_t i = 0; i < n; i++) memcpy(&evidence[24 + 8 * i], state->msg_hashes[i], 8);
+
+    uint8_t curr[8];
+    manifest_hash8(evidence, ev_len, curr);                   // same rule as Wi-Fi
+    memcpy(&evidence[8], curr, 8);
+
+    // ----- SAM payload, RFC 9575 §4.1 Figure 4 order -----
+    uint8_t payload[1 + 4 + 4 + sizeof(evidence) + DET_BYTES + 64];
+    memset(payload, 0, sizeof(payload));
+    payload[0] = DRIP_SAM_TYPE_MANIFEST;
+    drip_put_le32(&payload[1], vnb);
+    drip_put_le32(&payload[5], vna);
+    memcpy(&payload[9], evidence, ev_len);
+    memcpy(&payload[9 + ev_len], id.det, DET_BYTES);
+
+    // ----- Signed: VNB || VNA || Evidence || DET -----
+    uint8_t signed_data[4 + 4 + sizeof(evidence) + DET_BYTES];
+    drip_put_le32(&signed_data[0], vnb);
+    drip_put_le32(&signed_data[4], vna);
+    memcpy(&signed_data[8], evidence, ev_len);
+    memcpy(&signed_data[8 + ev_len], id.det, DET_BYTES);
+    bool sign_ok = det_sign_with(id, signed_data, (size_t)(8 + ev_len + DET_BYTES),
+                                 &payload[9 + ev_len + DET_BYTES]);
+    if (!sign_ok)
+        Serial.println("[Manifest] WARN: Ed25519 signing failed - signature zero-filled");
+
+    // ----- FEC-protected paging, RFC 9575 §5.1 / §6.1 -----
+    uint8_t pages = drip_auth_scatter_fec(payload, pay_len, vnb, out, max_pages);
+    if (pages == 0) {
+        Serial.println("[Manifest] ERROR: legacy payload did not fit in pages");
+        return false;
+    }
+
+    memcpy(state->prev_manifest_hash, curr, 8);
+    state->initialized    = true;
+    state->msg_hash_count = 0;
+    *page_count_out       = pages;
+
+    if (drip_debug_enabled()) {
+        Serial.printf("[Manifest] Legacy built - %u hashes, %u octets, %u pages (FEC), "
+                      "VNB=%u sign=%s\n", n, pay_len, pages, vnb, sign_ok ? "OK" : "FAIL");
+    }
+    return sign_ok;
+}

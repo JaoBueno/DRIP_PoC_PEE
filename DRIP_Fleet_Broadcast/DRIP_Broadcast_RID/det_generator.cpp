@@ -65,18 +65,21 @@
 //  The printed values MUST equal the rows below AND the DETs printed at boot.
 //
 //  ---------------------------------------------------------------------------
-//  ADDING A 4th DRONE
-//    1. append a row here (use slot_seed(3) from the snippet above),
-//    2. raise DET_IDENTITY_SLOTS in det_generator.h,
-//    3. raise FLEET_MAX in drone_fleet.h (read the airtime note there first).
+//  SESSION 3 (2026-09-30): rows 3-5 are TEST IDENTITIES, selectable with the
+//  console command `identity <0..5>` (det_generator.h explains each). Rows 3
+//  and 5 are deliberately faulty; row 4 lives under chain C. Adding a row now
+//  means raising DET_IDENTITY_COUNT; the number of radio slots
+//  (DET_IDENTITY_SLOTS, FLEET_MAX) is a separate limit.
 // ===========================================================================
 struct IdentityRow {
     uint8_t seed[ED25519_SEED_BYTES];
     uint8_t pubkey[ED25519_PUBKEY_BYTES];
     uint8_t det[DET_BYTES];
+    uint8_t chain;        // DET_CHAIN_A / DET_CHAIN_C   (session 3)
+    uint8_t test_flag;    // DET_FLAG_*                  (session 3)
 };
 
-static const IdentityRow IDENTITY_TABLE[DET_IDENTITY_SLOTS] = {
+static const IdentityRow IDENTITY_TABLE[DET_IDENTITY_COUNT] = {
     // -----------------------------------------------------------------------
     // SLOT 0 — externally-provided keypair (PKCS#8 seed), RAA=255 HDA=14340
     //   seed origin : supplied private key MC4CAQAw...tZ3gX (PKCS#8 Ed25519),
@@ -102,7 +105,8 @@ static const IdentityRow IDENTITY_TABLE[DET_IDENTITY_SLOTS] = {
       {   // expected DET — cSHAKE128 ORCHID, RFC 9374 3.5.2; self-checked at boot
           0x20, 0x01, 0x00, 0x30, 0x3F, 0xF8, 0x04, 0x05,
           0xD9, 0x52, 0x56, 0x18, 0xFB, 0xC9, 0xC3, 0xCF
-      }
+      },
+      DET_CHAIN_A, DET_FLAG_NONE
     },
     // -----------------------------------------------------------------------
     // SLOT 1 — fleet slot 1  (same seed as before; DET changes with RAA/HDA)
@@ -125,7 +129,8 @@ static const IdentityRow IDENTITY_TABLE[DET_IDENTITY_SLOTS] = {
       {   // expected DET — cSHAKE128 ORCHID, RFC 9374 3.5.2; self-checked at boot
           0x20, 0x01, 0x00, 0x30, 0x3F, 0xF8, 0x04, 0x05,
           0x84, 0x12, 0x43, 0x23, 0x5D, 0x3C, 0xA0, 0x50
-      }
+      },
+      DET_CHAIN_A, DET_FLAG_NONE
     },
     // -----------------------------------------------------------------------
     // SLOT 2 — fleet slot 2  (same seed as before; DET changes with RAA/HDA)
@@ -148,7 +153,82 @@ static const IdentityRow IDENTITY_TABLE[DET_IDENTITY_SLOTS] = {
       {   // expected DET — cSHAKE128 ORCHID, RFC 9374 3.5.2; self-checked at boot
           0x20, 0x01, 0x00, 0x30, 0x3F, 0xF8, 0x04, 0x05,
           0xA5, 0x7E, 0x87, 0xAB, 0x53, 0x88, 0xCB, 0xB8
-      }
+      },
+      DET_CHAIN_A, DET_FLAG_NONE
+    },
+    // -----------------------------------------------------------------------
+    // IDENTITY 3 - DELIBERATELY MALFORMED: DET hash does not match the key
+    //   seed origin : shake128(b"DRIP PoC UA slot 3", 32)
+    //   DET         : 2001:30:3ff8:405:b113:9c81:d46a:cb85
+    //   correct DET : 2001:30:3ff8:405:b113:9c81:d46a:cb84  (last bit flipped above;
+    //                 the boot check ASSERTS the mismatch is still there)
+    // -----------------------------------------------------------------------
+    {
+      {   // seed (Ed25519 private, RFC 8032)
+          0x02, 0x4D, 0xCB, 0xE9, 0xE4, 0xF8, 0x35, 0xF6,
+          0xF1, 0x72, 0x40, 0xDD, 0xE1, 0x64, 0x70, 0x57,
+          0xF1, 0x9A, 0x91, 0x19, 0x1D, 0x29, 0xE7, 0x7F,
+          0x75, 0xD5, 0x22, 0x4C, 0xE6, 0xCB, 0x84, 0x05
+      },
+      {   // pubkey (HI)
+          0x9A, 0x77, 0xBA, 0xAA, 0x90, 0x6F, 0x8F, 0x04,
+          0x8C, 0x61, 0xBC, 0x06, 0xEF, 0x40, 0x94, 0xAD,
+          0x4D, 0xF7, 0x63, 0x44, 0x62, 0xCB, 0xF3, 0xB2,
+          0x48, 0x47, 0x34, 0xE7, 0xFF, 0xC0, 0x64, 0x4B
+      },
+      {   // DET AS BROADCAST (malformed)
+          0x20, 0x01, 0x00, 0x30, 0x3F, 0xF8, 0x04, 0x05,
+          0xB1, 0x13, 0x9C, 0x81, 0xD4, 0x6A, 0xCB, 0x85
+      },
+      DET_CHAIN_A, DET_FLAG_BAD_DET_HASH
+    },
+    // -----------------------------------------------------------------------
+    // IDENTITY 4 - VALID, CHAIN C (RAA 15360 / HDA 100): only the Apex anchors it
+    //   seed origin : shake128(b"DRIP PoC UA slot 4", 32)
+    //   DET         : 2001:3f:0:6405:b6ae:eea3:d5b:898c
+    // -----------------------------------------------------------------------
+    {
+      {   // seed (Ed25519 private, RFC 8032)
+          0x73, 0xDB, 0xF2, 0xDC, 0x4F, 0xFA, 0x90, 0x43,
+          0x2A, 0x9A, 0x2F, 0xCE, 0xB4, 0xB4, 0x38, 0x28,
+          0x60, 0x46, 0x80, 0xFA, 0x1A, 0x60, 0x7B, 0x55,
+          0x88, 0x5D, 0xA6, 0x72, 0xBA, 0x21, 0xA2, 0xDC
+      },
+      {   // pubkey (HI)
+          0xA1, 0x83, 0xB4, 0xB8, 0xE3, 0xFF, 0xA2, 0x41,
+          0x68, 0x84, 0x15, 0x42, 0xFE, 0x69, 0xCA, 0x99,
+          0x4B, 0x0D, 0x7C, 0x1F, 0x0B, 0x5E, 0x9F, 0x8E,
+          0x6D, 0x81, 0x4F, 0xF1, 0xFA, 0x5C, 0x09, 0xF5
+      },
+      {   // DET
+          0x20, 0x01, 0x00, 0x3F, 0x00, 0x00, 0x64, 0x05,
+          0xB6, 0xAE, 0xEE, 0xA3, 0x0D, 0x5B, 0x89, 0x8C
+      },
+      DET_CHAIN_C, DET_FLAG_NONE
+    },
+    // -----------------------------------------------------------------------
+    // IDENTITY 5 - VALID DET, DELIBERATELY BAD ENDORSEMENT: HDA->UA signature corrupted
+    //   seed origin : shake128(b"DRIP PoC UA slot 5", 32)
+    //   DET         : 2001:30:3ff8:405:a5c7:51d1:7b8c:6526
+    // -----------------------------------------------------------------------
+    {
+      {   // seed (Ed25519 private, RFC 8032)
+          0xC3, 0x1A, 0xAF, 0x78, 0x58, 0xF7, 0x1F, 0x12,
+          0x77, 0xB6, 0x30, 0xA1, 0xE5, 0xEF, 0xF2, 0x95,
+          0x35, 0xE8, 0xEF, 0x18, 0xA4, 0x61, 0xDC, 0x85,
+          0xD8, 0xD5, 0xAB, 0x04, 0x14, 0xCA, 0xD8, 0xB1
+      },
+      {   // pubkey (HI)
+          0xA6, 0x27, 0x8B, 0x29, 0x99, 0x68, 0xFE, 0xE5,
+          0x8B, 0xBD, 0x7F, 0x57, 0x57, 0x1C, 0x21, 0x18,
+          0xD0, 0xD3, 0x24, 0x5D, 0x30, 0x2C, 0xDB, 0x07,
+          0xF2, 0xC6, 0x73, 0x58, 0x07, 0x95, 0x8B, 0x8F
+      },
+      {   // DET
+          0x20, 0x01, 0x00, 0x30, 0x3F, 0xF8, 0x04, 0x05,
+          0xA5, 0xC7, 0x51, 0xD1, 0x7B, 0x8C, 0x65, 0x26
+      },
+      DET_CHAIN_A, DET_FLAG_BAD_ENDORSEMENT
     },
 };
 // ===========================================================================
@@ -237,14 +317,17 @@ bool det_load_identity(uint8_t slot, DETIdentity &out) {
     memset(&out, 0, sizeof(out));
     out.valid = false;
 
-    if (slot >= DET_IDENTITY_SLOTS) {
-        Serial.printf("[DET] slot %u out of range (have %u)\n",
-                      (unsigned)slot, (unsigned)DET_IDENTITY_SLOTS);
+    if (slot >= DET_IDENTITY_COUNT) {
+        Serial.printf("[DET] identity %u out of range (have %u)\n",
+                      (unsigned)slot, (unsigned)DET_IDENTITY_COUNT);
         return false;
     }
 
     const IdentityRow &row = IDENTITY_TABLE[slot];
     memcpy(out.seed, row.seed, ED25519_SEED_BYTES);
+    out.index     = slot;
+    out.chain     = row.chain;
+    out.test_flag = row.test_flag;
 
     // Self-check 1: does the seed really produce the recorded public key?
     Ed25519::derivePublicKey(out.pubkey, (uint8_t *)row.seed);
@@ -256,7 +339,26 @@ bool det_load_identity(uint8_t slot, DETIdentity &out) {
 
     // Self-check 2: does that public key really produce the recorded DET?
     // (RFC 9374 §3.5.2 — this is the DET<->HI binding an observer re-derives.)
-    det_compute(out.pubkey, HHIT_TEST_RAA, HHIT_TEST_HDA, out.det);
+    // The (RAA, HDA) numbers come from the identity's chain (session 3).
+    const uint16_t raa = (row.chain == DET_CHAIN_C) ? DRIP_UA_C_RAA : HHIT_TEST_RAA;
+    const uint16_t hda = (row.chain == DET_CHAIN_C) ? DRIP_UA_C_HDA : HHIT_TEST_HDA;
+    det_compute(out.pubkey, raa, hda, out.det);
+
+    if (row.test_flag == DET_FLAG_BAD_DET_HASH) {
+        // DELIBERATE FAULT: broadcast the table's DET, which must NOT be the
+        // one the key derives. If it ever matched, the test would silently
+        // stop testing anything - so that case is the error here.
+        if (memcmp(out.det, row.det, DET_BYTES) == 0) {
+            Serial.printf("[DET] identity %u ERROR: meant to be malformed, but its "
+                          "DET binds to its key - the fault is gone.\n", (unsigned)slot);
+        } else {
+            Serial.printf("[DET] identity %u: DELIBERATELY MALFORMED DET (hash does not "
+                          "match the key, RFC 9374 3.5.2) - TEST ONLY\n", (unsigned)slot);
+        }
+        memcpy(out.det, row.det, DET_BYTES);
+        out.valid = true;
+        return true;
+    }
     if (memcmp(out.det, row.det, DET_BYTES) != 0) {
         Serial.printf("[DET] slot %u WARNING: computed DET != table DET — "
                       "regenerate the table (see the Python snippet in this file).\n",

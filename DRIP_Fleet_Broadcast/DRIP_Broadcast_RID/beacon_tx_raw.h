@@ -91,3 +91,17 @@ void beacon_tx_raw_stop(uint8_t slot);
 // This slot's spoofed source MAC (6 bytes), for logging. Never nullptr for a
 // valid slot.
 const uint8_t *beacon_tx_raw_mac(uint8_t slot);
+
+// ---------------------------------------------------------------------------
+// Runtime radio switch (rid_transport.*, `radio wifi|bt` console command).
+//
+// suspend: every slot stops beaconing and the Wi-Fi radio is stopped
+//          (esp_wifi_stop), so Bluetooth has the 2.4 GHz front end alone.
+//          The driver stays initialised; nothing is freed.
+// resume : Wi-Fi restarted exactly as beacon_tx_raw_init() left it — STA,
+//          promiscuous, channel WIFI_CHANNEL_DRIP. Slots re-arm on their next
+//          beacon_tx_raw_send(), i.e. at their next pack rebuild.
+// Neither changes a single byte of the frames this module builds.
+// ---------------------------------------------------------------------------
+void beacon_tx_raw_suspend();
+void beacon_tx_raw_resume();

@@ -1,0 +1,73 @@
+{
+  "_comment": "DRIP trusted identities. PUBLIC data only. RAW-KEY DET method (RFC 9374 reference / det-gen.py). Two chains: A = 255/14340, the fleet currently flown and the one drip_hierarchy.h describes; B = 1000/2000, retained as a second registration authority so the observer is exercised against more than one. Each chain has its own RAA and HDA key pair. Regenerate with check_hierarchy.py after any edit here or in drip_hierarchy.h.",
+  "ua_raa": 255,
+  "ua_hda": 14340,
+  "apex": {
+    "raa": 0,
+    "hda": 0,
+    "det": "200100300000000570F9E8E9B564F448",
+    "public_key": "4FD099CCD47D7893DFE9EC24414ECB0D9B5420232AAD30D91C465BE33CBE65C4",
+    "_role": "Apex - owns 2001:30::/28"
+  },
+  "raas": [
+    {
+      "raa": 255,
+      "hda": 0,
+      "det": "200100303FC000059024E82A8FD0AFB8",
+      "public_key": "DDE3BCCEC7F3A66A1115F45D720F4DC135C3AE7C4E22DCA38FDB1EFD6A495FF8",
+      "_role": "RAA 255 (chain A, DRIP_RAA_SEED_INIT)"
+    },
+    {
+      "raa": 1000,
+      "hda": 0,
+      "det": "20010030FA000005D18FF62AF870D730",
+      "public_key": "2543B92FF1095511476ADC8369DB6DDC933665A11978DDA1404EE1066CA9559D",
+      "_role": "RAA 1000 (chain B, DRIP_RAA_B_SEED_INIT)"
+    }
+  ],
+  "hdas": [
+    {
+      "raa": 255,
+      "hda": 14340,
+      "det": "200100303FF80405D162233E9B7EFEEE",
+      "public_key": "13D9908A70925992ED546007D27F50DA68BA7217EF62AC3CCA784529FF10471C",
+      "_role": "HDA 255/14340 (chain A, DRIP_HDA_SEED_INIT)"
+    },
+    {
+      "raa": 1000,
+      "hda": 2000,
+      "det": "20010030FA07D005F0D20B5A871B0A28",
+      "public_key": "174553B456DDDFC6908ECAB1C101FE6AB21E2BAA0617795B7D43A63482993FD5",
+      "_role": "HDA 1000/2000 (chain B, DRIP_HDA_B_SEED_INIT)"
+    }
+  ],
+  "ua": [
+    {
+      "det": "200100303FF80405D9525618FBC9C3CF",
+      "raa": 255,
+      "hda": 14340,
+      "public_key": "F505704EB544F861190F2D8EDAC9BA83F320D5E38726B3F51C220851320EC7E6",
+      "_role": "slot 0"
+    },
+    {
+      "det": "200100303FF80405841243235D3CA050",
+      "raa": 255,
+      "hda": 14340,
+      "public_key": "F7D792E5DD000E8C05DCEEB357D03AF1770B0D7D6BFE429AABBD3C3F1CB16FE2",
+      "_role": "slot 1"
+    },
+    {
+      "det": "200100303FF80405A57E87AB5388CBB8",
+      "raa": 255,
+      "hda": 14340,
+      "public_key": "B80BC263962420FBF1454E61BB149FCD1BDC447195B12D63C69E7FB7AEAAC3AC",
+      "_role": "slot 2"
+    },
+    {
+      "det": "200100303FF804055C767822E2ED15BC",
+      "raa": 255,
+      "hda": 14340,
+      "_role": "registered in the collaborating registry; no public key held locally, so the binding is checked only against whatever DNS returns"
+    }
+  ]
+}

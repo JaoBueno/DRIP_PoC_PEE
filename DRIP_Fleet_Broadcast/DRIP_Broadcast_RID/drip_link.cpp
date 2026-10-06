@@ -33,3 +33,12 @@ uint8_t drip_link_build_be(const BroadcastEndorsement *be,
     // ASTM page-0 Timestamp header carries the BE's VNB (the validity anchor).
     return drip_auth_scatter(sam, DRIP_LINK_SAM_BYTES, be->vnb, out, max_pages);
 }
+
+uint8_t drip_link_build_be_fec(const BroadcastEndorsement *be,
+                               uint8_t out[][F3411_MSG_BYTES],
+                               uint8_t max_pages) {
+    uint8_t sam[DRIP_LINK_SAM_BYTES];
+    drip_link_serialize_sam(be, sam);
+    // Same page-0 Timestamp as the Wi-Fi Link: the BE's VNB.
+    return drip_auth_scatter_fec(sam, DRIP_LINK_SAM_BYTES, be->vnb, out, max_pages);
+}

@@ -60,3 +60,39 @@ uint8_t drip_auth_pages_needed(uint8_t auth_len);
 uint8_t drip_auth_scatter(const uint8_t *auth_data, uint8_t auth_len,
                           uint32_t timestamp,
                           uint8_t out[][F3411_MSG_BYTES], uint8_t max_pages);
+
+// ---------------------------------------------------------------------------
+// DRIP Single Page FEC — RFC 9575 §5 / §5.1. LEGACY TRANSPORTS ONLY.
+//
+// RFC 9575 §6.1: FEC MUST be used over Legacy Transports (Bluetooth 4.x).
+// RFC 9575 §6.2: FEC MUST NOT be used in Message Packs, so the Wi-Fi path keeps
+//                calling drip_auth_scatter() above, unchanged.
+//
+// What this adds to the drip_auth_scatter() layout (RFC 9575 Figure 2 +
+// Figure 11), viewing the 23-octet Authentication Payload of every page as one
+// continuous stream:
+//
+//   [ Auth Headers (6) | Auth Data (Length) | ADL (1) | null pad | FEC (23) ]
+//     LPI Len TS[4]                           ^ Additional Data Length
+//
+//   * ADL follows the last Auth Data octet. If Auth Data ends exactly at a
+//     page boundary, ADL is the first octet of the next page (§5.2).
+//   * Null padding fills the rest of that page, so the FEC starts on a new
+//     page (§5.1 item 1).
+//   * ADL = padding octets + 23 parity octets (§5.1 item 1, Figure 11: 33 =
+//     10 pad + 23 FEC).
+//   * Last Page Index = index of the FEC page, i.e. increased by the pages
+//     needed for ADL, padding and FEC (§5.1 item 2). Length is NOT changed:
+//     it still counts Auth Data only (the FEC is not signed, §5).
+//   * Parity page payload = XOR of the 23-octet payloads of every data page,
+//     page 0 included, starting from a 23-octet null pad (§5.1).
+//   * Technical maximum 16 pages, LPI <= 15 (§3.2.1).
+//
+// Returns the number of pages written (data pages + 1 FEC page), or 0 if the
+// result would exceed max_pages or 16 pages.
+// ---------------------------------------------------------------------------
+#define DRIP_AUTH_MAX_PAGES      16    // RFC 9575 §3.2.1: pages indexed 0..15
+
+uint8_t drip_auth_scatter_fec(const uint8_t *auth_data, uint8_t auth_len,
+                              uint32_t timestamp,
+                              uint8_t out[][F3411_MSG_BYTES], uint8_t max_pages);

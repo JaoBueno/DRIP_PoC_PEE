@@ -61,6 +61,30 @@
 #define DET_IDENTITY_SLOTS  3
 
 // ---------------------------------------------------------------------------
+// IDENTITIES vs SLOTS (session 3, 2026-09-30)
+// DET_IDENTITY_SLOTS stays the number of RADIO slots (per-slot MAC / BLE
+// address, per-slot endorsement). DET_IDENTITY_COUNT is the number of rows in
+// IDENTITY_TABLE; any slot can broadcast any identity (`identity <0..5>`).
+//   0..2  valid UAs, chain A (RAA 255 / HDA 14340), in hierarchy.json
+//   3     DET HASH DOES NOT MATCH ITS KEY      (expect E-LINK-01, or E-DET-02
+//                                               when the key is given)
+//   4     valid UA under CHAIN C, which only the Apex anchors (expect clean,
+//         every key learned from the air; never Trusted on the live map)
+//   5     valid DET, BAD HDA->UA ENDORSEMENT SIGNATURE   (expect E-LINK-02)
+// Identities 3-5 are deliberately NOT in hierarchy.json.
+// ---------------------------------------------------------------------------
+#define DET_IDENTITY_COUNT  6
+
+// Registration chain an identity lives under (drip_hierarchy.h).
+#define DET_CHAIN_A         0     // RAA 255 / HDA 14340
+#define DET_CHAIN_C         2     // RAA 15360 / HDA 100, air-only
+
+// Deliberate faults, for testing the Observer.
+#define DET_FLAG_NONE             0
+#define DET_FLAG_BAD_DET_HASH     1   // broadcast DET != cSHAKE128(key)   (RFC 9374 §3.5.2)
+#define DET_FLAG_BAD_ENDORSEMENT  2   // HDA->UA signature corrupted       (RFC 9575 §4.2)
+
+// ---------------------------------------------------------------------------
 // One virtual UA's cryptographic identity.
 //
 // *** TEST ARTEFACT: .seed is a PRIVATE KEY sitting in plain flash. ***
@@ -73,6 +97,9 @@ struct DETIdentity {
     uint8_t pubkey[ED25519_PUBKEY_BYTES];   // HI (Host Identity)
     uint8_t seed[ED25519_SEED_BYTES];       // Ed25519 private seed (RFC 8032)
     bool    valid;                          // false => signing unavailable
+    uint8_t index;                          // row in IDENTITY_TABLE (0..DET_IDENTITY_COUNT-1)
+    uint8_t chain;                          // DET_CHAIN_A / DET_CHAIN_C
+    uint8_t test_flag;                      // DET_FLAG_* (deliberate fault, or none)
 };
 
 // Derive a DET from an Ed25519 public key for an ARBITRARY (RAA, HDA) hierarchy.
@@ -82,7 +109,8 @@ struct DETIdentity {
 void det_compute(const uint8_t pubkey[ED25519_PUBKEY_BYTES],
                  uint16_t raa, uint16_t hda, uint8_t det[DET_BYTES]);
 
-// Load hardcoded test identity `slot` (0 .. DET_IDENTITY_SLOTS-1).
+// Load hardcoded test identity `slot` (0 .. DET_IDENTITY_COUNT-1; the name is
+// historical: since session 3 it is an IDENTITY index, not a radio slot).
 // Derives the public key from the seed, self-checks it against the recorded
 // public key, computes the DET and self-checks it against the recorded DET.
 // Returns false if slot is out of range or the Ed25519 backend is unavailable

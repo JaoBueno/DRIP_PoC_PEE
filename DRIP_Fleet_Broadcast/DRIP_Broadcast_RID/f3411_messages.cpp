@@ -135,3 +135,27 @@ F3411System f3411_build_system(double op_lat, double op_lon, float op_alt_m) {
 
     return msg;
 }
+
+// ---------------------------------------------------------------------------
+// Self ID — ASTM F3411-22a §5.4.5.16 / Table 10 (added session 3)
+// ---------------------------------------------------------------------------
+F3411SelfID f3411_build_self_id(uint8_t desc_type, const char *description) {
+    F3411SelfID msg = {};                       // zero = null padding
+    msg.type_ver  = (F3411_TYPE_SELF_ID << 4) | F3411_PROTO_VER;   // 0x32
+    msg.desc_type = desc_type;
+    if (description)
+        strncpy(msg.description, description, sizeof(msg.description));  // no terminator needed
+    return msg;
+}
+
+// ---------------------------------------------------------------------------
+// Operator ID — ASTM F3411-22a §5.4.5.20 / Table 12 (added session 3)
+// ---------------------------------------------------------------------------
+F3411OperatorID f3411_build_operator_id(uint8_t op_id_type, const char *operator_id) {
+    F3411OperatorID msg = {};                   // zero = null padding + reserved
+    msg.type_ver   = (F3411_TYPE_OPERATOR_ID << 4) | F3411_PROTO_VER;  // 0x52
+    msg.op_id_type = op_id_type;
+    if (operator_id)
+        strncpy(msg.operator_id, operator_id, sizeof(msg.operator_id));
+    return msg;
+}

@@ -204,3 +204,30 @@ const uint8_t *beacon_tx_raw_mac(uint8_t slot) {
     if (slot >= DET_IDENTITY_SLOTS) return SLOT_MAC[0];
     return SLOT_MAC[slot];
 }
+
+// ---------------------------------------------------------------------------
+// Runtime radio switch — see beacon_tx_raw.h.
+// ---------------------------------------------------------------------------
+void beacon_tx_raw_suspend() {
+    if (!g_ready) return;
+    for (uint8_t s = 0; s < DET_IDENTITY_SLOTS; s++) g_tx[s].armed = false;
+    g_ready = false;                    // send/repeat become no-ops
+    esp_wifi_set_promiscuous(false);
+    esp_err_t e = esp_wifi_stop();
+    Serial.printf("[TX] Wi-Fi suspended (esp_wifi_stop: %s) - no beacons.\n",
+                  esp_err_to_name(e));
+}
+
+void beacon_tx_raw_resume() {
+    if (g_ready) return;
+    esp_err_t e1 = esp_wifi_start();
+    esp_err_t e2 = esp_wifi_set_promiscuous(true);
+    esp_err_t e3 = esp_wifi_set_channel(WIFI_CHANNEL_DRIP, WIFI_SECOND_CHAN_NONE);
+    if (e1 != ESP_OK || e2 != ESP_OK || e3 != ESP_OK) {
+        Serial.printf("[TX] Wi-Fi resume FAILED: start=%s promiscuous=%s channel=%s\n",
+                      esp_err_to_name(e1), esp_err_to_name(e2), esp_err_to_name(e3));
+        return;
+    }
+    g_ready = true;
+    Serial.printf("[TX] Wi-Fi resumed - STA+promiscuous, channel %d.\n", WIFI_CHANNEL_DRIP);
+}

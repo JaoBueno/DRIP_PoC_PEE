@@ -56,27 +56,43 @@
 //  *** TEST-ONLY SWITCH — NOT RFC-CONFORMANT WHEN ENABLED ***
 //
 //  DRONE_REPLAY_RECORDED_TIME
+//      0 = the Location message carries the LIVE clock (RFC-conformant).
+//          *** THIS IS THE SETTING NOW IN USE. ***
 //      1 = the ASTM Location message carries the RECORDED timestamp from the
 //          dataset (e.g. 2025-11-09T20:27:29Z), replayed verbatim.
-//      0 = the Location message carries the LIVE clock (RFC-conformant).
 //
-//  WHY THIS IS NOT CONFORMANT
+//  WHY IT IS NOW 0
+//      With it at 1 a single pack carried timestamps from two different clocks.
+//      The Location message reported the moment the point was RECORDED, while
+//      the Authentication header, the VNB and the VNA all reported the live
+//      clock, so the two disagreed by the interval between the recording and
+//      the replay. 14 CFR §89.310(b) requires the time mark to be synchronised
+//      with all other message elements, and ASTM F3411-22a reaches Part 89 as a
+//      means of compliance through F3586-22, so the requirement reaches this
+//      transmitter. Neither F3411-22a nor RFC 9575 asks a RECEIVER to compare
+//      the two, so no Observer code raises a finding for it; the divergence had
+//      to be removed at the source.
+//
+//  WHAT IS UNAFFECTED: THE PACING
+//      The recorded timestamps still govern WHICH point is emitted and WHEN.
+//      drone_playback_next() advances the cursor only once the measured elapsed
+//      time has covered the recorded delta to the next point (see
+//      hold_elapsed_s in drone_playback.cpp), and that logic never reads this
+//      switch. A five-minute recording therefore still takes about five minutes
+//      to replay. The switch decides only which value is WRITTEN into the
+//      Location timestamp field, never which point is sent.
+//
+//  WHY THE OLD SETTING WAS NOT CONFORMANT
 //      ASTM F3411-22a Table 6 defines the Location timestamp as tenths of a
 //      second within the CURRENT or previous UTC hour. Replaying a timestamp
 //      from a past date makes that field describe a time that is not now, so a
 //      receiver cross-checking the broadcast against the real world (RFC 9575
 //      §9.1 / §6.3) can no longer use it for freshness.
 //
-//  SCOPE — what this switch does NOT touch
-//      DRIP authentication timestamps (VNB/VNA in the Wrapper, Link and
-//      Manifest) come from drip_timestamp(), NOT from this module. They remain
-//      on the LIVE clock and stay RFC 9575 §3.2.4.3 conformant. Only the ASTM
-//      Location message timestamp field is affected.
-//
-//  ENABLED ONLY to replay this specific historical dataset on the bench.
-//  Set to 0 (or delete the block) before any live/flight use.
+//  Set it back to 1 only to reproduce a capture recorded before this change,
+//  and expect the four timestamp fields to disagree again if you do.
 // ===========================================================================
-#define DRONE_REPLAY_RECORDED_TIME  1
+#define DRONE_REPLAY_RECORDED_TIME  0
 
 // Nominal seconds between a drone's transmission cycles (3 Hz -> ~0.333 s).
 // Used only as a bootstrap/floor value for pacing; real elapsed time is
@@ -145,9 +161,10 @@ bool drone_playback_finished(const PlaybackState *st);
 // the position, with speed/heading/vspeed derived from the previous point.
 // Once the track ends, keeps returning the final point with zero velocity.
 //
-// `live_unix_time_s` is used for DronePosition.unix_time_s ONLY when
-// DRONE_REPLAY_RECORDED_TIME == 0. When it is 1 (test mode) the argument is
-// ignored and the point's RECORDED timestamp is returned instead.
+// `live_unix_time_s` is what DronePosition.unix_time_s carries while
+// DRONE_REPLAY_RECORDED_TIME is 0, which is the current setting. Setting the
+// switch back to 1 makes the argument ignored and returns the point's RECORDED
+// timestamp instead. The recorded timestamps pace the cursor either way.
 // `slot` is used only for logging the end-of-track notice.
 DronePosition drone_playback_next(PlaybackState *st, uint32_t live_unix_time_s,
                                   uint8_t slot);

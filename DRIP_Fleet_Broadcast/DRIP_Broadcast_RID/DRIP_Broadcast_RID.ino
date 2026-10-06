@@ -58,7 +58,22 @@
 // a production/flight image. *** Comment it out to build without a Link.
 //
 // ---------------------------------------------------------------------------
-// CHANGES THIS REVISION (multi-drone)
+// CHANGES THIS REVISION (runtime clock, 2026-09-30)
+//   * Console command `time <unix>` sets the board's clock (drip_time.h) and
+//     re-signs the endorsement chain. setup() prints the clock and a warning
+//     while it is still the build default.
+//
+// CHANGES PREVIOUS REVISION (runtime Wi-Fi / Bluetooth, 2026-09-29)
+//   * setup() calls rid_transport_init() instead of beacon_tx_raw_init(). The
+//     Wi-Fi bring-up underneath is unchanged and the board still boots on Wi-Fi.
+//   * New console command `radio [status|wifi|bt]`. Bluetooth is ASTM F3411-22a
+//     §5.4.6 Legacy advertising (this ESP32 has no BLE 5), with the RFC 9575
+//     §6.4 per-second schedule and RFC 9575 §5 FEC. See drone_fleet.cpp.
+//   * PARTITION SCHEME: Wi-Fi + Bluedroid do not fit the default 1.2 MB app
+//     partition. Select Tools > Partition Scheme > "Huge APP (3MB No OTA/1MB
+//     SPIFFS)" in the Arduino IDE.
+//
+// CHANGES PREVIOUS REVISION (multi-drone)
 //   * loop() no longer builds packs. It is now: fleet_cmd(); fleet_tick(millis());
 //     All of the A/B/C logic moved VERBATIM into drone_fleet.cpp, once per drone.
 //   * The singletons g_kp / g_manifest / g_msg_counter / g_cycle are gone —
@@ -88,7 +103,7 @@ extern "C" {
 #include "esp_event.h"
 }
 
-#include "beacon_tx_raw.h"   // raw 802.11 injection, one MAC per virtual drone
+#include "rid_transport.h"   // Wi-Fi Beacon (default) or Bluetooth Legacy, chosen at runtime
 #include "drone_fleet.h"     // the virtual UA fleet + its scheduler + commands
 
 // ---------------------------------------------------------------------------
@@ -112,13 +127,24 @@ void setup() {
     // Radio first: fleet_init() -> drip_manifest_init() seeds the hash chain
     // from esp_random(), which needs the RF hardware to be running to be a true
     // hardware RNG.
-    beacon_tx_raw_init();
+    // The board always boots on Wi-Fi, exactly as before. `radio bt` switches
+    // to Bluetooth Legacy at runtime and brings the BT stack up on first use
+    // (rid_transport.h), so a BT start-up failure can never stop the boot.
+    rid_transport_init();
 
     // Loads the identity table, provisions the BE chain, and starts ONE drone on
     // flight 0 — i.e. exactly the original single-drone PoC.
     fleet_init();
 
-    Serial.println("[OK] Setup complete -- type 'fleet 3' for three drones.");
+    // The board has no real clock: until `time <unix>` is typed it signs with
+    // SIM_DRIP_TIME_BASE (2026-01-01), and an Observer using real time will
+    // report every endorsement as expired (E-LINK-04).
+    fleet_print_time();
+    Serial.println("[Time] WARNING: set the clock before capturing: time <unix>   "
+                   "(Unix seconds, UTC; PowerShell: [DateTimeOffset]::UtcNow.ToUnixTimeSeconds())");
+
+    Serial.println("[OK] Setup complete -- type 'fleet 3' for three drones, "
+                   "'radio bt' for Bluetooth Legacy.");
 }
 
 // ---------------------------------------------------------------------------
