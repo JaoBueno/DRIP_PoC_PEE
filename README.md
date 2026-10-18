@@ -4,6 +4,8 @@
 A bench implementation of **drone Remote ID with DRIP authentication** (IETF
 [RFC 9374](https://www.rfc-editor.org/rfc/rfc9374), [RFC 9575](https://www.rfc-editor.org/rfc/rfc9575), [RFC 9886](https://www.rfc-editor.org/rfc/rfc9886)) on top of **ASTM F3411-22a** Broadcast Remote ID for my Master Thesis.
 
+Parts of the code and documentation were developed with the assistance of Claude (Anthropic). All changes were reviewed and tested by the author.
+
 An ESP32 plays the drone, or a fleet of up to three drones, broadcasting signed Remote ID messages over **Wi-Fi Beacon** or **Bluetooth Legacy**. You choose the radio at runtime. A second ESP32 captures the air, and Python tools on the PC decode the messages, verify the signatures and the endorsement chain, and report every error with the clause it violates.
 
 ```
