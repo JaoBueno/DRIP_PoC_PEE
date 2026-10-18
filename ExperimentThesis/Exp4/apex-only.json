@@ -1,0 +1,15 @@
+{
+  "_comment": "DRIP trusted identities. PUBLIC data only. RAW-KEY DET method (RFC 9374 reference / det-gen.py). Two chains: A = 255/14340, the fleet currently flown and the one drip_hierarchy.h describes; B = 1000/2000, retained as a second registration authority so the observer is exercised against more than one. Each chain has its own RAA and HDA key pair. Regenerate with check_hierarchy.py after any edit here or in drip_hierarchy.h.",
+  "ua_raa": 255,
+  "ua_hda": 14340,
+  "apex": {
+    "raa": 0,
+    "hda": 0,
+    "det": "200100300000000570F9E8E9B564F448",
+    "public_key": "4FD099CCD47D7893DFE9EC24414ECB0D9B5420232AAD30D91C465BE33CBE65C4",
+    "_role": "Apex - owns 2001:30::/28"
+  },
+  "raas": [],
+  "hdas": [],
+  "ua": []
+}

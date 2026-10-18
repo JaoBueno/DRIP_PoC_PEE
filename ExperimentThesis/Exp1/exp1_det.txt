@@ -1,0 +1,12 @@
+self-test OK (Keccak, NIST cSHAKE128 KAT, HID packing, DET round-trip + binding)
+
+==== DRIP Entity Tag (DET) ====
+  RAA / HDA / Suite : 1000 / 2000 / 5
+  DET (hex)         : 20010030fa07d0054dfdc31103e51953
+  DET (IPv6)        : 2001:30:fa07:d005:4dfd:c311:3e5:1953
+  upper 64 (id)     : 20010030fa07d005
+  lower 64 (hash)   : 4dfdc31103e51953
+  Base32 (App. C)   : 400G0C7T0Y80AKFWQC8G7R8RAC
+
+  C array for firmware / observer:
+  const uint8_t UA_DET[16] = { 0x20, 0x01, 0x00, 0x30, 0xFA, 0x07, 0xD0, 0x05, 0x4D, 0xFD, 0xC3, 0x11, 0x03, 0xE5, 0x19, 0x53 };

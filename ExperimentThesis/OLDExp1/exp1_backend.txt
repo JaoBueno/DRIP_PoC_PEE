@@ -1,0 +1,2 @@
+cryptography 47.0.0 (OpenSSL)
+agrees with ed25519.py on RFC 8032 §7.1 TEST 1 (valid accepted, tampered rejected)

@@ -1,0 +1,31 @@
+[Time] unix=1792279542  2026-10-17T23:25:42Z  DRIP=245978742  (set by the 'time' command)
+[REG] chain re-signed for 1 UA(s)
+[Time] endorsement chain re-signed with the new time. Endorsements sent BEFORE this point keep the old date (E-LINK-04 in a capture).
+[Manifest] init — prev_hash seeded (RNG): D784823ADFFB67DB
+[Manifest] init — prev_hash seeded (RNG): 7E639160AF2897D7
+[Manifest] init — prev_hash seeded (RNG): 71CBC9FAA865CDDF
+[REG] chain re-signed for 3 UA(s)
+[Fleet] slot  MAC                DET                               id  flight  phase  point
+   >0   02:44:52:49:50:00  200100303FF80405D9525618FBC9C3CF  0      2   A        0/329
+    1   02:44:52:49:50:01  200100303FF80405841243235D3CA050  1      2   B        0/329
+    2   02:44:52:49:50:02  200100303FF80405A57E87AB5388CBB8  2      2   C        0/329
+[Fleet] 3 drone(s); focus=slot 0; pack dump=off
+[Fleet] radio: Wi-Fi Beacon (ASTM F3411-22a 5.4.9)
+[Fleet] focus = slot 1 — list/info/next/reset/stop/<number> now act on it
+[DET] identity 3: DELIBERATELY MALFORMED DET (hash does not match the key, RFC 9374 3.5.2) - TEST ONLY
+[Manifest] init — prev_hash seeded (RNG): C68907DD45E732BB
+[REG] chain re-signed for 3 UA(s)
+[Identity] slot 1 now broadcasts identity 3 - MALFORMED DET: hash does not match the key (expect E-LINK-01)
+[Identity]   DET = 2001:0030:3FF8:0405:B113:9C81:D46A:CB85
+[Fleet] focus = slot 2 — list/info/next/reset/stop/<number> now act on it
+[Manifest] init — prev_hash seeded (RNG): 74B9C50D0052E2A4
+[REG] chain re-signed for 3 UA(s)
+[Identity] slot 2 now broadcasts identity 5 - BAD ENDORSEMENT SIGNATURE (expect E-LINK-02)
+[Identity]   DET = 2001:0030:3FF8:0405:A5C7:51D1:7B8C:6526
+[Fleet] focus = slot 0 — list/info/next/reset/stop/<number> now act on it
+[Fleet] slot  MAC                DET                               id  flight  phase  point
+   >0   02:44:52:49:50:00  200100303FF80405D9525618FBC9C3CF  0      2   C       22/329
+    1   02:44:52:49:50:01  200100303FF80405B1139C81D46ACB85  3      2   B       15/329
+    2   02:44:52:49:50:02  200100303FF80405A5C751D17B8C6526  5      2   B        3/329
+[Fleet] 3 drone(s); focus=slot 0; pack dump=off
+[Fleet] radio: Wi-Fi Beacon (ASTM F3411-22a 5.4.9)

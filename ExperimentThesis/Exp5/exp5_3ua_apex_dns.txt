@@ -1,0 +1,61 @@
+Trust anchor: ..\ExperimentThesis\Exp4\apex-only.json  apex=2001:30:0:5:70f9:e8e9:b564:f448
+Ed25519 backend: cryptography 47.0.0 (OpenSSL)
+  self-test: agrees with ed25519.py on RFC 8032 §7.1 TEST 1 (valid accepted, tampered rejected)
+Time reference: '# host-time' marker unix=1792159015.409 sniffer_us=527853980; clock tolerance 10 s
+
+[DNS] DET 2001:30:3ff8:405:d952:5618:fbc9:c3cf is NOT in the trusted-identities file.
+[DNS] found: fqdn=snfr2025000123.driplab.example.  mfg=AeroTech Robotics Ltd  sn=SN-FR-2025-000123  model=ATX-Quad-400  reg_status=active
+[DNS] DET<->key binding VERIFIED (RFC 9374 3.5.2).
+[DNS] (--dns-fallback non-interactive: verifying this run with the DNS key; not writing to ..\ExperimentThesis\Exp4\apex-only.json)
+
+[DNS] DET 2001:30:3ff8:405:8412:4323:5d3c:a050 is NOT in the trusted-identities file.
+[DNS] no identity found in DNS: PTR lookup returned no answer for 0.5.0.a.c.3.d.5.3.2.3.4.2.1.4.8.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+[DNS] DET 2001:30:3ff8:405:a57e:87ab:5388:cbb8 is NOT in the trusted-identities file.
+[DNS] no identity found in DNS: PTR lookup returned no answer for 8.b.b.c.8.8.3.5.b.a.7.8.e.7.5.a.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+Input format: A (air capture - DRIP_Sniffer)
+DRIP payloads decoded: 4274
+Decoded items: 41315
+
+Message-type counts:
+   25644  Authentication
+    4274  Basic ID
+    4274  Location/Vector
+    4274  Authentication (reassembled)
+    2849  System
+
+Capture health: 4,274/4,274 frames intact (100.00%)
+
+Identities observed: 3 drone(s)
+
+  #  DET                                      MAC(s)                packs  key from                               auth
+  1  2001:30:3ff8:405:d952:5618:fbc9:c3cf     02:44:52:49:50:00      1425  registry (snfr2025000123.driplab.example.) OK  (238 wrap, 237 man)
+  2  2001:30:3ff8:405:a57e:87ab:5388:cbb8     02:44:52:49:50:02      1425  air (endorsed by 2001:30:3ff8:405:d162:233e:9b7e:feee) OK  (238 wrap, 238 man)
+  3  2001:30:3ff8:405:8412:4323:5d3c:a050     02:44:52:49:50:01      1424  air (endorsed by 2001:30:3ff8:405:d162:233e:9b7e:feee) OK  (237 wrap, 238 man)
+
+Key provenance: 1 from trust file, 4 from air, 1 from registry
+  Keys learned from the air are valid for THIS RUN ONLY. They reached a trust anchor (RFC 9575 6.4.2), and nothing writes them to the trusted-identities file; use --offer-trust to be asked.
+  Keys obtained from the registry make this run NETWORK-DEPENDENT. Without DNSSEC the resolver is itself an origin of trust (RFC 9886 7.1), so such an identity is not equivalent to one the operator loaded beforehand.
+
+Findings by DET:
+  2001:30:3ff8:405:d952:5618:fbc9:c3cf  [trusted]  0 finding(s)
+  2001:30:3ff8:405:a57e:87ab:5388:cbb8  [trusted]  2 finding(s)
+        E-MAN-02 x1, E-MAN-03 x1
+  2001:30:3ff8:405:8412:4323:5d3c:a050  [trusted]  1 finding(s)
+        E-MAN-02 x1
+
+Findings:
+  E-MAN-02  x2  Manifest ASTM hash matches no observed Message Pack (Extended Transport only; on Legacy an unmatched hash is a message not received, counted in capture health)
+          constraint: RFC 9575 4.4.3.2 / 4.4
+          - @ frame[3] 02:44:52:49:50:02 cnt=0x00 auth@msg[3]  (unmatched pack hash 0000000000000000)
+          - @ frame[7] 02:44:52:49:50:01 cnt=0x01 auth@msg[3]  (unmatched pack hash 0000000000000000)
+  E-MAN-03  x1  Manifest Link hash matches no observed BE:HDA,UA
+          constraint: RFC 9575 4.4.2
+          - @ frame[3] 02:44:52:49:50:02 cnt=0x00 auth@msg[3]  (unmatched link hash 0000000000000000)
+
+Total findings: 3
+
+DNS fallback summary (untrusted DETs this run):
+  2001:30:3ff8:405:d952:5618:fbc9:c3cf      verified-this-run
+  2001:30:3ff8:405:8412:4323:5d3c:a050      not-in-dns
+  2001:30:3ff8:405:a57e:87ab:5388:cbb8      not-in-dns

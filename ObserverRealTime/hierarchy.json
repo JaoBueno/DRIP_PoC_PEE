@@ -67,7 +67,7 @@
       "det": "200100303FF804055C767822E2ED15BC",
       "raa": 255,
       "hda": 14340,
-      "_role": "registered in the collaborating registry; no public key held locally, so the binding is checked only against whatever DNS returns"
+      "_role": "enrolled with no public key held locally; not registered in the collaborating registry (DNS lookup of 2026-10-17: no PTR answer)"
     }
   ]
 }

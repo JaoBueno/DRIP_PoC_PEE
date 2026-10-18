@@ -1,0 +1,35 @@
+Trust anchor: ..\ExperimentThesis\Exp4\apex-only.json  apex=2001:30:0:5:70f9:e8e9:b564:f448
+Ed25519 backend: cryptography 47.0.0 (OpenSSL)
+  self-test: agrees with ed25519.py on RFC 8032 §7.1 TEST 1 (valid accepted, tampered rejected)
+Time reference: '# host-time' marker unix=1792110623.766 sniffer_us=961383386; clock tolerance 10 s
+Input format: A (air capture - DRIP_Sniffer)
+DRIP payloads decoded: 1425
+Decoded items: 13776
+
+Message-type counts:
+    8552  Authentication
+    1425  Basic ID
+    1425  Location/Vector
+    1425  Authentication (reassembled)
+     949  System
+
+Capture health: 1,425/1,425 frames intact (100.00%)
+
+Identities observed: 1 drone(s)
+
+  #  DET                                      MAC(s)                packs  key from                               auth
+  1  2001:30:3ff8:405:d952:5618:fbc9:c3cf     02:44:52:49:50:00      1425  air (endorsed by 2001:30:3ff8:405:d162:233e:9b7e:feee) OK  (237 wrap, 238 man)
+
+Key provenance: 1 from trust file, 3 from air
+  Keys learned from the air are valid for THIS RUN ONLY. They reached a trust anchor (RFC 9575 6.4.2), and nothing writes them to the trusted-identities file; use --offer-trust to be asked.
+
+Findings by DET:
+  2001:30:3ff8:405:d952:5618:fbc9:c3cf  [trusted]  1 finding(s)
+        E-MAN-02 x1
+
+Findings:
+  E-MAN-02  x1  Manifest ASTM hash matches no observed Message Pack (Extended Transport only; on Legacy an unmatched hash is a message not received, counted in capture health)
+          constraint: RFC 9575 4.4.3.2 / 4.4
+          - @ frame[2] 02:44:52:49:50:00 cnt=0x23 auth@msg[3]  (unmatched pack hash fc434c02ed2f0fb4)
+
+Total findings: 1

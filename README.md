@@ -19,6 +19,7 @@ An ESP32 plays the drone, or a fleet of up to three drones, broadcasting signed 
 |---|---|
 | `DRIP_Fleet_Broadcast/DRIP_Broadcast_RID/` | Broadcaster firmware (the "drone"): DRIP identities, endorsements, Manifests, Wi-Fi and Bluetooth transmission |
 | `ObserverRealTime/` | Sniffer firmware (`DRIP_Sniffer.ino`) and the Python Observer: batch report, live map, flight map, test vectors |
+| `ExperimentThesis/` | The experiments reported in the dissertation: how to run each one from the Command Prompt ([`EXPERIMENTS.md`](ExperimentThesis/EXPERIMENTS.md)), and the outputs and logs of each run, one subfolder per experiment |
 
 Full documentation also includes:
 

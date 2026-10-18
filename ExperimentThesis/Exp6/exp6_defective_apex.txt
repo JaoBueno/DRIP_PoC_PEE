@@ -1,0 +1,74 @@
+Trust anchor: ..\ExperimentThesis\Exp4\apex-only.json  apex=2001:30:0:5:70f9:e8e9:b564:f448
+Ed25519 backend: cryptography 47.0.0 (OpenSSL)
+  self-test: agrees with ed25519.py on RFC 8032 §7.1 TEST 1 (valid accepted, tampered rejected)
+Time reference: '# host-time' marker unix=1792279688.687 sniffer_us=2905582299; clock tolerance 10 s
+Input format: A (air capture - DRIP_Sniffer)
+DRIP payloads decoded: 4336
+Decoded items: 41912
+
+Message-type counts:
+   26010  Authentication
+    4336  Basic ID
+    4336  Location/Vector
+    4336  Authentication (reassembled)
+    2894  System
+
+Capture health: 4,336/4,339 frames intact (99.93%)
+  3 frame(s) DISCARDED - damaged in the capture pipeline (serial byte loss), not on the air.
+  These are W-CAP-01, not DRIP defects. Findings from the surrounding frames may be collateral.
+  1 Manifest chain gap(s): a Manifest beacon was lost or the drone restarted, so the next one was not chain-compared (E-MAN-04 needs consecutive Manifests, < 4.5 s apart)
+
+Identities observed: 3 drone(s)
+
+  #  DET                                      MAC(s)                packs  key from                               auth
+  1  2001:30:3ff8:405:b113:9c81:d46a:cb85     02:44:52:49:50:01      1446  -                                      NO KEY - not verified
+  2  2001:30:3ff8:405:d952:5618:fbc9:c3cf     02:44:52:49:50:00      1446  air (endorsed by 2001:30:3ff8:405:d162:233e:9b7e:feee) OK  (242 wrap, 241 man)
+  3  2001:30:3ff8:405:a5c7:51d1:7b8c:6526     02:44:52:49:50:02      1444  -                                      NO KEY - not verified
+
+Key provenance: 1 from trust file, 3 from air
+  Keys learned from the air are valid for THIS RUN ONLY. They reached a trust anchor (RFC 9575 6.4.2), and nothing writes them to the trusted-identities file; use --offer-trust to be asked.
+
+Findings by DET:
+  2001:30:3ff8:405:b113:9c81:d46a:cb85  [NO KEY]  4 finding(s)
+        E-KEY-01 x1, E-MAN-02 x2, E-MAN-04 x1
+  2001:30:3ff8:405:d952:5618:fbc9:c3cf  [trusted]  1 finding(s)
+        E-MAN-02 x1
+  2001:30:3ff8:405:a5c7:51d1:7b8c:6526  [NO KEY]  5 finding(s)
+        E-KEY-01 x1, E-MAN-02 x2, E-MAN-03 x1, E-MAN-04 x1
+  (unattributed - format/pack level)  7 finding(s)
+        E-LINK-01 x2, E-LINK-02 x2, W-CAP-01 x3
+
+Findings:
+  E-KEY-01  x2  No public key known for this DET - signature/binding NOT checked
+          constraint: observer keyring (RFC 9374 3.5.2 binds a DET to one key)
+          - @ frame[0] 02:44:52:49:50:01 cnt=0x6A msg[0]  (2001:30:3ff8:405:b113:9c81:d46a:cb85 - no key after the endorsement walk; covers 2170 deferred check(s))
+          - @ frame[2] 02:44:52:49:50:02 cnt=0x5D msg[0]  (2001:30:3ff8:405:a5c7:51d1:7b8c:6526 - no key after the endorsement walk; covers 2168 deferred check(s))
+  E-LINK-01  x2  Link child DET does not bind to child HI (cSHAKE128 mismatch)
+          constraint: RFC 9374 3.5.2 / RFC 9575 4.2
+          - @ Link BE child=2001:30:3ff8:405:b113:9c81:d46a:cb85
+          - @ Link BE child=2001:30:3ff8:405:b113:9c81:d46a:cb85
+  E-LINK-02  x2  Link parent signature invalid (Ed25519)
+          constraint: RFC 9575 4.2
+          - @ Link BE child=2001:30:3ff8:405:a5c7:51d1:7b8c:6526
+          - @ Link BE child=2001:30:3ff8:405:a5c7:51d1:7b8c:6526
+  E-MAN-02  x5  Manifest ASTM hash matches no observed Message Pack (Extended Transport only; on Legacy an unmatched hash is a message not received, counted in capture health)
+          constraint: RFC 9575 4.4.3.2 / 4.4
+          - @ frame[0] 02:44:52:49:50:01 cnt=0x6A auth@msg[3]  (unmatched pack hash 10b32d18448f204b)
+          - @ frame[1] 02:44:52:49:50:00 cnt=0x77 auth@msg[3]  (unmatched pack hash a098ff01682ae3b2)
+          - @ frame[2] 02:44:52:49:50:02 cnt=0x5D auth@msg[3]  (unmatched pack hash 51245de6f796bb36)
+          - @ frame[68] 02:44:52:49:50:02 cnt=0x00 auth@msg[3]  (unmatched pack hash 0000000000000000)
+          - @ frame[72] 02:44:52:49:50:01 cnt=0x01 auth@msg[3]  (unmatched pack hash 0000000000000000)
+  E-MAN-03  x1  Manifest Link hash matches no observed BE:HDA,UA
+          constraint: RFC 9575 4.4.2
+          - @ frame[68] 02:44:52:49:50:02 cnt=0x00 auth@msg[3]  (unmatched link hash 0000000000000000)
+  E-MAN-04  x2  Manifest chain broken (Prev != previous Manifest's Current hash)
+          constraint: RFC 9575 4.4.2 / 4.4.3
+          - @ frame[68] 02:44:52:49:50:02 cnt=0x00 auth@msg[3]  (prev=194c273828db6e56 expected=d5990af1f2c44c35)
+          - @ frame[72] 02:44:52:49:50:01 cnt=0x01 auth@msg[3]  (prev=0d72330ed7a0886b expected=813f71ec709e0dd4)
+  W-CAP-01  x3  Frame discarded: byte count contradicts the sniffer's own declared length - the frame was damaged in the CAPTURE PIPELINE (serial byte loss), not on the air. NOT a DRIP or ASTM defect, and says nothing about the drone that sent it
+          constraint: DRIP_Sniffer '#F ... len=' contract. The 802.11 FCS is checked in hardware before a frame is ever delivered to the sniffer, so RF corruption cannot reach here; missing bytes mean the serial link or the logger dropped them.
+          - @ capture  (declared len=296, got 216 B)
+          - @ capture  (declared len=296, got 280 B)
+          - @ capture  (declared len=296, got 240 B)
+
+Total findings: 17

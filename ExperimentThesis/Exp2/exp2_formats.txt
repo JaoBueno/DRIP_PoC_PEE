@@ -1,0 +1,4 @@
+DRIP Link | 7 pages | 137 octets | 476 messages | within limit: yes
+DRIP Manifest | 6 pages | 121 octets | 475 messages | within limit: yes
+DRIP Wrapper | 5 pages | 89 octets | 474 messages | within limit: yes
+incomplete: 0

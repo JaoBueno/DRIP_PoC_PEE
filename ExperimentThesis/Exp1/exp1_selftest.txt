@@ -1,0 +1,93 @@
+  [PASS] valid pack (structural, placeholder Wrapper) expect=(clean)    got: no findings
+  [PASS] valid single Basic ID (our DET)            expect=(clean)    got: no findings
+  [PASS] valid 2-page Wrapper auth (structural)     expect=(clean)    got: no findings
+  [PASS] E-FMT-02 wrong version                     expect=E-FMT-02   got: E-FMT-02
+  [PASS] E-PACK-01 size!=0x19                       expect=E-PACK-01  got: E-PACK-01
+  [PASS] E-PACK-02 count=0                          expect=E-PACK-02  got: E-PACK-02
+  [PASS] E-PACK-03 truncated                        expect=E-PACK-03  got: E-FMT-03, E-PACK-03
+  [PASS] E-PACK-04 nested pack                      expect=E-PACK-04  got: E-PACK-04
+  [PASS] E-AUTH-01 reserved AuthType 7              expect=E-AUTH-01  got: E-AUTH-01
+  [PASS] E-AUTH-04 last-page reserved bits          expect=E-AUTH-04  got: E-AUTH-04, E-SEM-01
+  [PASS] E-AUTH-03 page gap                         expect=E-AUTH-03  got: E-AUTH-03, E-AUTH-05, E-SEM-01
+  [PASS] E-SAM-01 unknown SAM type                  expect=E-SAM-01   got: E-SAM-01
+  [PASS] E-DET-01 bad DET prefix                    expect=E-DET-01   got: E-DET-01
+  [PASS] E-DET-02 binding failure                   expect=E-DET-02   got: E-DET-02
+  [PASS] E-FMT-01 unknown message type              expect=E-FMT-01   got: E-FMT-01
+  [PASS] E-FMT-03 record shorter than 25 bytes      expect=E-FMT-03   got: E-FMT-03
+  [PASS] E-AUTH-02 page 1 with no page 0            expect=E-AUTH-02  got: E-AUTH-02
+  [PASS] E-AUTH-05 length disagrees with pages      expect=E-AUTH-05  got: E-AUTH-05
+  [PASS] E-AUTH-06 timestamp past the Table 8 ceiling expect=E-AUTH-06  got: E-AUTH-06
+  [PASS] E-SEM-01 DRIP auth with no DRIP Basic ID   expect=E-SEM-01   got: E-SEM-01
+  [PASS] valid signed Extended Wrapper              expect=(clean)    got: no findings
+  [PASS] E-SIG-01 corrupted Wrapper signature       expect=E-SIG-01   got: E-SIG-01
+
+self-test: 22 passed, 0 failed
+
+--- DRIP Link chain self-test ---
+  [PASS] valid full 3-link chain                expect=(clean)    got: no findings
+  [PASS] E-LINK-02 bad parent signature         expect=E-LINK-02  got: E-LINK-02, E-LINK-03
+  [PASS] E-LINK-03 broken chain (no Apex)       expect=E-LINK-03  got: E-LINK-03
+  [PASS] E-LINK-01 child DET/HI mismatch        expect=E-LINK-01  got: E-LINK-01
+  [PASS] E-LINK-04 expired window               expect=E-LINK-04  got: E-LINK-03, E-LINK-04
+  chain self-test: 5 passed, 0 failed
+
+--- DRIP Manifest self-test ---
+  [PASS] valid manifest (all refs present)        expect=(clean)    got: no findings
+  [PASS] E-MAN-02 pack hash not observed          expect=E-MAN-02   got: E-MAN-02
+  [PASS] E-MAN-03 link hash not observed          expect=E-MAN-03   got: E-MAN-03
+  [PASS] E-MAN-01 bad signature                   expect=E-MAN-01   got: E-MAN-01
+  [PASS] E-MAN-05 wrong current hash              expect=E-MAN-05   got: E-MAN-05
+  [PASS] E-MAN-04 broken manifest chain           expect=E-MAN-04   got: E-MAN-04
+  manifest self-test: 6 passed, 0 failed
+
+--- DRIP trust-model self-test ---
+  [PASS] C1 unknown aircraft, Apex-only trust file    expect=(clean)                got: no findings
+  [PASS] C2 Wrapper ahead of the Link that endorses it expect=(clean)                got: no findings
+  [PASS] C3 cyclic chain with no path to the Apex     expect=E-KEY-01,E-LINK-03     got: E-KEY-01, E-LINK-03
+  [PASS] C4 unanchored Link offering a key            expect=E-KEY-01,E-LINK-03     got: E-KEY-01, E-LINK-03
+  [PASS] C5 endorsement outside its validity window   expect=E-KEY-01,E-LINK-04     got: E-KEY-01, E-LINK-04
+  trust self-test: 5 passed, 0 failed
+
+--- Bluetooth Legacy / FEC self-test (session 3) ---
+  [PASS] L1 clean 3 s of the RFC 9575 6.4 schedule      expect=(clean)    got: no findings
+  [PASS] L2 one Manifest page lost -> rebuilt by FEC    expect=(clean)    got: no findings
+  [PASS] L3 one Link page lost -> rebuilt by FEC        expect=(clean)    got: no findings
+  [PASS] L4 two Manifest pages lost -> counted, not judged expect=(clean)    got: no findings
+  [PASS] E-FEC-02 parity page corrupted                 expect=E-FEC-02   got: E-FEC-02
+  [PASS] E-FEC-01 ADL value wrong                       expect=E-FEC-01   got: E-FEC-01
+  [PASS] E-FEC-03 Legacy Manifest without FEC           expect=E-FEC-03   got: E-FEC-03
+  [PASS] E-FEC-04 FEC inside a Message Pack             expect=E-FEC-04,E-MAN-02,E-MAN-03 got: E-FEC-04, E-MAN-02, E-MAN-03
+  [PASS] E-SEM-01 Legacy auth, no Basic ID from that address expect=E-SEM-01   got: E-SEM-01
+  [PASS] E-MAN-04 Legacy chain broken between consecutive Manifests expect=E-MAN-04   got: E-MAN-04
+  [PASS] L5 Manifest covers a message not received      expect=(clean)    got: no findings
+  [PASS] L8 Link not yet arrived, capture < 60 s -> counted expect=(clean)    got: no findings
+  [PASS] E-MAN-03 Link missing for > 60 s (RFC 9575 6.3) expect=E-MAN-03   got: E-MAN-03
+  [PASS] L6 mixed Wi-Fi + Bluetooth capture             expect=(clean)    got: no findings
+  [PASS] L7 mixed capture labelled A+BT                 got: A+BT (mixed Wi-Fi / Bluetooth air capture - DRIP_Sniffer)
+  [PASS] W1 Wi-Fi Manifest beacon lost -> gap, no E-MAN-04 expect=(clean)    got: no findings
+  [PASS] E-MAN-04 Wi-Fi consecutive Manifests, chain broken expect=E-MAN-04   got: E-MAN-04
+  [PASS] W2 Wi-Fi Manifests 3 s apart, chain intact     expect=(clean)    got: no findings
+  legacy self-test: 18 passed, 0 failed
+
+--- Validity window self-test (E-WIND-01 / E-LINK-04) ---
+  [PASS] T1 Wrapper received inside VNB..VNA                  expect=(clean)    got: no findings
+  [PASS] T2 Wrapper received before VNB (beyond tolerance)    expect=E-WIND-01  got: E-WIND-01
+  [PASS] T3 Wrapper received after VNA (beyond tolerance)     expect=E-WIND-01  got: E-WIND-01
+  [PASS] T4 Wrapper before VNB, within tolerance              expect=(clean)    got: no findings
+  [PASS] T5 Wrapper after VNA, within tolerance               expect=(clean)    got: no findings
+  [PASS] T6 bad Wrapper signature inside the window           expect=E-SIG-01   got: E-SIG-01
+  [PASS] T7 bad Wrapper signature after VNA: discarded        expect=E-WIND-01  got: E-WIND-01
+  [PASS] T8 expired Manifest (bad signature): discarded       expect=E-WIND-01  got: E-WIND-01
+  [PASS] T9 Manifest inside the window, references present    expect=(clean)    got: no findings
+  [PASS] T10 marker: Wrapper received at t(VNB+60)            expect=(clean)    got: no findings
+  [PASS] T11 marker shifted past VNA: Wrapper discarded       expect=E-WIND-01  got: E-WIND-01
+  [PASS] T12 frames before the marker (sniffer reboot) refused expect=(clean)    got: no findings
+  [PASS] T13 --capture-start anchored at the first frame      expect=(clean)    got: no findings
+  [PASS] T14 chain and Wrapper inside their windows           expect=(clean)    got: no findings
+  [PASS] T15 every Link receipt after VNA: no key learned     expect=E-KEY-01,E-LINK-03,E-LINK-04 got: E-KEY-01, E-LINK-03, E-LINK-04
+  [PASS] T16 Link received inside and after VNA: still usable expect=E-LINK-04  got: E-LINK-04
+  [PASS] T17 BT capture inside the windows                    expect=(clean)    got: no findings
+  [PASS] T18 BT capture after every VNA: Manifests discarded  expect=E-LINK-03,E-LINK-04,E-WIND-01 got: E-LINK-03, E-LINK-04, E-WIND-01
+  [PASS] T19 CLI refuses a capture without a time reference   expect=exit 2    got: exit 2  (exit codes: COMMANDS.md section 8)
+  [PASS] T20 CLI reads the host-time marker                   expect=exit 0    got: exit 0  (exit codes: COMMANDS.md section 8)
+  window self-test: 20 passed, 0 failed

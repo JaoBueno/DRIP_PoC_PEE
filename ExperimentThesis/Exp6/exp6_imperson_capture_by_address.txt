@@ -1,0 +1,20 @@
+capture: ..\ExperimentThesis\Exp6\exp6_imperson_capture.txt
+trust file: hierarchy.json
+
+address 02:44:52:49:50:00: 700 frames, DET(s) broadcast: 2001:30:3ff8:405:d952:5618:fbc9:c3cf
+  Wrapper signatures verified 118, failed 0 (distinct)
+  Manifest signatures verified 117, failed 0 (distinct)
+  E-MAN-04   113
+
+address 02:44:52:49:50:01: 679 frames, DET(s) broadcast: 2001:30:3ff8:405:d952:5618:fbc9:c3cf
+  Wrapper signatures verified 0, failed 113 (distinct)
+  Manifest signatures verified 0, failed 113 (distinct)
+  E-MAN-01   113
+  E-MAN-02   1
+  E-MAN-04   113
+  E-SIG-01   226
+
+codes raised on no frame (endorsements, identities, capture):
+  W-CAP-01   3
+
+E-SIG-01 is counted per Wrapper frame (each Wrapper is sent twice); E-MAN-01 per distinct Manifest.

@@ -1,0 +1,427 @@
+===== 1. Apex: 2001:30:0:5:70f9:e8e9:b564:f448  (exit 1)
+DET  2001:30:0:5:70f9:e8e9:b564:f448
+     200100300000000570F9E8E9B564F448
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 0
+  HDA    : 0
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : 70F9E8E9B564F448
+  RAA /44 zone : 2001:30::/44
+  HDA /56 zone : 2001:30::/56
+  reverse FQDN : 8.4.4.f.4.6.5.b.9.e.8.e.9.f.0.7.5.0.0.0.0.0.0.0.0.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : no
+  HDA trusted : no
+  UA enrolled : no   (not individually listed in 'ua')
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : 4FD099CCD47D7893DFE9EC24414ECB0D9B5420232AAD30D91C465BE33CBE65C4
+  binding        : VERIFIED  (key derives this DET)
+
+SUMMARY: DET 200100300000000570F9E8E9B564F448 claims RAA=0/HDA=0, is on the allow-list (trusted via its HDA), its zones do NOT nest (E-ZONE-01), and its registered key VERIFIES the binding.
+
+Findings:
+  [E-ZONE-01] DET does not nest under any trusted RAA /44 or HDA /56 zone
+         DET does not nest under any trusted RAA/HDA zone (claims RAA=0 HDA=0, HDA zone 2001:30::/56)
+
+===== 2. RAA, chain A: 2001:30:3fc0:5:9024:e82a:8fd0:afb8  (exit 1)
+DET  2001:30:3fc0:5:9024:e82a:8fd0:afb8
+     200100303FC000059024E82A8FD0AFB8
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 255
+  HDA    : 0
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : 9024E82A8FD0AFB8
+  RAA /44 zone : 2001:30:3fc0::/44
+  HDA /56 zone : 2001:30:3fc0::/56
+  reverse FQDN : 8.b.f.a.0.d.f.8.a.2.8.e.4.2.0.9.5.0.0.0.0.c.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : yes  (RAA 255, DET 200100303FC000059024E82A8FD0AFB8)
+  HDA trusted : no
+  UA enrolled : no   (not individually listed in 'ua')
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : DDE3BCCEC7F3A66A1115F45D720F4DC135C3AE7C4E22DCA38FDB1EFD6A495FF8
+  binding        : VERIFIED  (key derives this DET)
+
+SUMMARY: DET 200100303FC000059024E82A8FD0AFB8 claims RAA=255/HDA=0, is on the allow-list (trusted via its HDA), its zones do NOT nest (E-ZONE-01), and its registered key VERIFIES the binding.
+
+Findings:
+  [E-ZONE-01] DET does not nest under any trusted RAA /44 or HDA /56 zone
+         DET does not nest under any trusted RAA/HDA zone (claims RAA=255 HDA=0, HDA zone 2001:30:3fc0::/56)
+
+===== 3. HDA, chain A: 2001:30:3ff8:405:d162:233e:9b7e:feee  (exit 0)
+DET  2001:30:3ff8:405:d162:233e:9b7e:feee
+     200100303FF80405D162233E9B7EFEEE
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 255
+  HDA    : 14340
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : D162233E9B7EFEEE
+  RAA /44 zone : 2001:30:3ff0::/44
+  HDA /56 zone : 2001:30:3ff8:400::/56
+  reverse FQDN : e.e.e.f.e.7.b.9.e.3.3.2.2.6.1.d.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : yes  (RAA 255, DET 200100303FC000059024E82A8FD0AFB8)
+  HDA trusted : yes  -> HDA_TRUSTED level (HDA 255/14340, DET 200100303FF80405D162233E9B7EFEEE)
+  UA enrolled : no   (not individually listed in 'ua')
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : 13D9908A70925992ED546007D27F50DA68BA7217EF62AC3CCA784529FF10471C
+  binding        : VERIFIED  (key derives this DET)
+
+SUMMARY: DET 200100303FF80405D162233E9B7EFEEE claims RAA=255/HDA=14340, is on the allow-list (trusted via its HDA), its zones nest, and its registered key VERIFIES the binding.
+
+===== 4. RAA, chain B: 2001:30:fa00:5:d18f:f62a:f870:d730  (exit 1)
+DET  2001:30:fa00:5:d18f:f62a:f870:d730
+     20010030FA000005D18FF62AF870D730
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 1000
+  HDA    : 0
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : D18FF62AF870D730
+  RAA /44 zone : 2001:30:fa00::/44
+  HDA /56 zone : 2001:30:fa00::/56
+  reverse FQDN : 0.3.7.d.0.7.8.f.a.2.6.f.f.8.1.d.5.0.0.0.0.0.a.f.0.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : yes  (RAA 1000, DET 20010030FA000005D18FF62AF870D730)
+  HDA trusted : no
+  UA enrolled : no   (not individually listed in 'ua')
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : 2543B92FF1095511476ADC8369DB6DDC933665A11978DDA1404EE1066CA9559D
+  binding        : VERIFIED  (key derives this DET)
+
+SUMMARY: DET 20010030FA000005D18FF62AF870D730 claims RAA=1000/HDA=0, is on the allow-list (trusted via its HDA), its zones do NOT nest (E-ZONE-01), and its registered key VERIFIES the binding.
+
+Findings:
+  [E-ZONE-01] DET does not nest under any trusted RAA /44 or HDA /56 zone
+         DET does not nest under any trusted RAA/HDA zone (claims RAA=1000 HDA=0, HDA zone 2001:30:fa00::/56)
+
+===== 5. HDA, chain B: 2001:30:fa07:d005:f0d2:b5a:871b:a28  (exit 0)
+DET  2001:30:fa07:d005:f0d2:b5a:871b:a28
+     20010030FA07D005F0D20B5A871B0A28
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 1000
+  HDA    : 2000
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : F0D20B5A871B0A28
+  RAA /44 zone : 2001:30:fa00::/44
+  HDA /56 zone : 2001:30:fa07:d000::/56
+  reverse FQDN : 8.2.a.0.b.1.7.8.a.5.b.0.2.d.0.f.5.0.0.d.7.0.a.f.0.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : yes  (RAA 1000, DET 20010030FA000005D18FF62AF870D730)
+  HDA trusted : yes  -> HDA_TRUSTED level (HDA 1000/2000, DET 20010030FA07D005F0D20B5A871B0A28)
+  UA enrolled : no   (not individually listed in 'ua')
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : 174553B456DDDFC6908ECAB1C101FE6AB21E2BAA0617795B7D43A63482993FD5
+  binding        : VERIFIED  (key derives this DET)
+
+SUMMARY: DET 20010030FA07D005F0D20B5A871B0A28 claims RAA=1000/HDA=2000, is on the allow-list (trusted via its HDA), its zones nest, and its registered key VERIFIES the binding.
+
+===== 6. RAA, chain C: 2001:3f:0:5:80a:9f96:d49f:7057  (exit 1)
+DET  2001:3f:0:5:80a:9f96:d49f:7057
+     2001003F00000005080A9F96D49F7057
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 15360
+  HDA    : 0
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : 080A9F96D49F7057
+  RAA /44 zone : 2001:3f::/44
+  HDA /56 zone : 2001:3f::/56
+  reverse FQDN : 7.5.0.7.f.9.4.d.6.9.f.9.a.0.8.0.5.0.0.0.0.0.0.0.f.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : no
+  HDA trusted : no
+  UA enrolled : no   (not individually listed in 'ua')
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : none on file
+  binding        : NOT CHECKED — no key registered for this DET (E-KEY-01)
+
+SUMMARY: DET 2001003F00000005080A9F96D49F7057 claims RAA=15360/HDA=0, but it is NOT on the trusted-identities allow-list (zones do not nest either).
+
+Findings:
+  [E-ZONE-01] DET does not nest under any trusted RAA /44 or HDA /56 zone
+         DET does not nest under any trusted RAA/HDA zone (claims RAA=15360 HDA=0, HDA zone 2001:3f::/56)
+  [E-TRUST-01] DET is not in the trusted-identities file at any level (no trusted HDA delegation, not individually enrolled)
+         DET is not in the trusted-identities file at any level (no trusted HDA delegation, not individually enrolled)
+  [E-KEY-01] No public key known for this DET - signature/binding NOT checked
+         no public key registered for this DET — DET<->key binding NOT checked
+
+===== 7. HDA, chain C: 2001:3f:0:6405:f18a:e883:952e:9b04  (exit 1)
+DET  2001:3f:0:6405:f18a:e883:952e:9b04
+     2001003F00006405F18AE883952E9B04
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 15360
+  HDA    : 100
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : F18AE883952E9B04
+  RAA /44 zone : 2001:3f::/44
+  HDA /56 zone : 2001:3f:0:6400::/56
+  reverse FQDN : 4.0.b.9.e.2.5.9.3.8.8.e.a.8.1.f.5.0.4.6.0.0.0.0.f.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : no
+  HDA trusted : no
+  UA enrolled : no   (not individually listed in 'ua')
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : none on file
+  binding        : NOT CHECKED — no key registered for this DET (E-KEY-01)
+
+SUMMARY: DET 2001003F00006405F18AE883952E9B04 claims RAA=15360/HDA=100, but it is NOT on the trusted-identities allow-list (zones do not nest either).
+
+Findings:
+  [E-ZONE-01] DET does not nest under any trusted RAA /44 or HDA /56 zone
+         DET does not nest under any trusted RAA/HDA zone (claims RAA=15360 HDA=100, HDA zone 2001:3f:0:6400::/56)
+  [E-TRUST-01] DET is not in the trusted-identities file at any level (no trusted HDA delegation, not individually enrolled)
+         DET is not in the trusted-identities file at any level (no trusted HDA delegation, not individually enrolled)
+  [E-KEY-01] No public key known for this DET - signature/binding NOT checked
+         no public key registered for this DET — DET<->key binding NOT checked
+
+===== 8. UA identity 0: 2001:30:3ff8:405:d952:5618:fbc9:c3cf  (exit 0)
+DET  2001:30:3ff8:405:d952:5618:fbc9:c3cf
+     200100303FF80405D9525618FBC9C3CF
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 255
+  HDA    : 14340
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : D9525618FBC9C3CF
+  RAA /44 zone : 2001:30:3ff0::/44
+  HDA /56 zone : 2001:30:3ff8:400::/56
+  reverse FQDN : f.c.3.c.9.c.b.f.8.1.6.5.2.5.9.d.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : yes  (RAA 255, DET 200100303FC000059024E82A8FD0AFB8)
+  HDA trusted : yes  -> HDA_TRUSTED level (HDA 255/14340, DET 200100303FF80405D162233E9B7EFEEE)
+  UA enrolled : yes  -> UA_ENROLLED level (this exact DET is individually listed)
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : F505704EB544F861190F2D8EDAC9BA83F320D5E38726B3F51C220851320EC7E6
+  binding        : VERIFIED  (key derives this DET)
+
+SUMMARY: DET 200100303FF80405D9525618FBC9C3CF claims RAA=255/HDA=14340, is on the allow-list (individually enrolled), its zones nest, and its registered key VERIFIES the binding.
+
+===== 9. UA identity 1: 2001:30:3ff8:405:8412:4323:5d3c:a050  (exit 0)
+DET  2001:30:3ff8:405:8412:4323:5d3c:a050
+     200100303FF80405841243235D3CA050
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 255
+  HDA    : 14340
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : 841243235D3CA050
+  RAA /44 zone : 2001:30:3ff0::/44
+  HDA /56 zone : 2001:30:3ff8:400::/56
+  reverse FQDN : 0.5.0.a.c.3.d.5.3.2.3.4.2.1.4.8.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : yes  (RAA 255, DET 200100303FC000059024E82A8FD0AFB8)
+  HDA trusted : yes  -> HDA_TRUSTED level (HDA 255/14340, DET 200100303FF80405D162233E9B7EFEEE)
+  UA enrolled : yes  -> UA_ENROLLED level (this exact DET is individually listed)
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : F7D792E5DD000E8C05DCEEB357D03AF1770B0D7D6BFE429AABBD3C3F1CB16FE2
+  binding        : VERIFIED  (key derives this DET)
+
+SUMMARY: DET 200100303FF80405841243235D3CA050 claims RAA=255/HDA=14340, is on the allow-list (individually enrolled), its zones nest, and its registered key VERIFIES the binding.
+
+===== 10. UA identity 2: 2001:30:3ff8:405:a57e:87ab:5388:cbb8  (exit 0)
+DET  2001:30:3ff8:405:a57e:87ab:5388:cbb8
+     200100303FF80405A57E87AB5388CBB8
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 255
+  HDA    : 14340
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : A57E87AB5388CBB8
+  RAA /44 zone : 2001:30:3ff0::/44
+  HDA /56 zone : 2001:30:3ff8:400::/56
+  reverse FQDN : 8.b.b.c.8.8.3.5.b.a.7.8.e.7.5.a.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : yes  (RAA 255, DET 200100303FC000059024E82A8FD0AFB8)
+  HDA trusted : yes  -> HDA_TRUSTED level (HDA 255/14340, DET 200100303FF80405D162233E9B7EFEEE)
+  UA enrolled : yes  -> UA_ENROLLED level (this exact DET is individually listed)
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : B80BC263962420FBF1454E61BB149FCD1BDC447195B12D63C69E7FB7AEAAC3AC
+  binding        : VERIFIED  (key derives this DET)
+
+SUMMARY: DET 200100303FF80405A57E87AB5388CBB8 claims RAA=255/HDA=14340, is on the allow-list (individually enrolled), its zones nest, and its registered key VERIFIES the binding.
+
+===== 11. UA identity 3 (malformed DET): 2001:30:3ff8:405:b113:9c81:d46a:cb85  (exit 1)
+DET  2001:30:3ff8:405:b113:9c81:d46a:cb85
+     200100303FF80405B1139C81D46ACB85
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 255
+  HDA    : 14340
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : B1139C81D46ACB85
+  RAA /44 zone : 2001:30:3ff0::/44
+  HDA /56 zone : 2001:30:3ff8:400::/56
+  reverse FQDN : 5.8.b.c.a.6.4.d.1.8.c.9.3.1.1.b.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : yes  (RAA 255, DET 200100303FC000059024E82A8FD0AFB8)
+  HDA trusted : yes  -> HDA_TRUSTED level (HDA 255/14340, DET 200100303FF80405D162233E9B7EFEEE)
+  UA enrolled : no   (not individually listed in 'ua')
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : none on file
+  binding        : NOT CHECKED — no key registered for this DET (E-KEY-01)
+
+SUMMARY: DET 200100303FF80405B1139C81D46ACB85 claims RAA=255/HDA=14340, is on the allow-list (trusted via its HDA) and its zones nest. No public key is registered for this DET, so the binding was not checked.
+
+Findings:
+  [E-KEY-01] No public key known for this DET - signature/binding NOT checked
+         no public key registered for this DET — DET<->key binding NOT checked
+
+===== 12. UA identity 4 (chain C): 2001:3f:0:6405:b6ae:eea3:d5b:898c  (exit 1)
+DET  2001:3f:0:6405:b6ae:eea3:d5b:898c
+     2001003F00006405B6AEEEA30D5B898C
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 15360
+  HDA    : 100
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : B6AEEEA30D5B898C
+  RAA /44 zone : 2001:3f::/44
+  HDA /56 zone : 2001:3f:0:6400::/56
+  reverse FQDN : c.8.9.8.b.5.d.0.3.a.e.e.e.a.6.b.5.0.4.6.0.0.0.0.f.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : no
+  HDA trusted : no
+  UA enrolled : no   (not individually listed in 'ua')
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : none on file
+  binding        : NOT CHECKED — no key registered for this DET (E-KEY-01)
+
+SUMMARY: DET 2001003F00006405B6AEEEA30D5B898C claims RAA=15360/HDA=100, but it is NOT on the trusted-identities allow-list (zones do not nest either).
+
+Findings:
+  [E-ZONE-01] DET does not nest under any trusted RAA /44 or HDA /56 zone
+         DET does not nest under any trusted RAA/HDA zone (claims RAA=15360 HDA=100, HDA zone 2001:3f:0:6400::/56)
+  [E-TRUST-01] DET is not in the trusted-identities file at any level (no trusted HDA delegation, not individually enrolled)
+         DET is not in the trusted-identities file at any level (no trusted HDA delegation, not individually enrolled)
+  [E-KEY-01] No public key known for this DET - signature/binding NOT checked
+         no public key registered for this DET — DET<->key binding NOT checked
+
+===== 13. UA identity 5 (bad endorsement): 2001:30:3ff8:405:a5c7:51d1:7b8c:6526  (exit 1)
+DET  2001:30:3ff8:405:a5c7:51d1:7b8c:6526
+     200100303FF80405A5C751D17B8C6526
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 255
+  HDA    : 14340
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : A5C751D17B8C6526
+  RAA /44 zone : 2001:30:3ff0::/44
+  HDA /56 zone : 2001:30:3ff8:400::/56
+  reverse FQDN : 6.2.5.6.c.8.b.7.1.d.1.5.7.c.5.a.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : yes  (RAA 255, DET 200100303FC000059024E82A8FD0AFB8)
+  HDA trusted : yes  -> HDA_TRUSTED level (HDA 255/14340, DET 200100303FF80405D162233E9B7EFEEE)
+  UA enrolled : no   (not individually listed in 'ua')
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : none on file
+  binding        : NOT CHECKED — no key registered for this DET (E-KEY-01)
+
+SUMMARY: DET 200100303FF80405A5C751D17B8C6526 claims RAA=255/HDA=14340, is on the allow-list (trusted via its HDA) and its zones nest. No public key is registered for this DET, so the binding was not checked.
+
+Findings:
+  [E-KEY-01] No public key known for this DET - signature/binding NOT checked
+         no public key registered for this DET — DET<->key binding NOT checked
+
+===== 14. Listed with no key: 2001:30:3ff8:405:5c76:7822:e2ed:15bc  (exit 1)
+DET  2001:30:3ff8:405:5c76:7822:e2ed:15bc
+     200100303FF804055C767822E2ED15BC
+Trusted-identities file: hierarchy.json
+
+Decoded fields (RFC 9374 3.3):
+  prefix : 2001003   (ok, 2001:30::/28)
+  RAA    : 255
+  HDA    : 14340
+  Suite  : 5   (EdDSA/cSHAKE128)
+  hash64 : 5C767822E2ED15BC
+  RAA /44 zone : 2001:30:3ff0::/44
+  HDA /56 zone : 2001:30:3ff8:400::/56
+  reverse FQDN : c.b.5.1.d.e.2.e.2.2.8.7.6.7.c.5.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+Trust (RFC 9886 6 delegation + local allow-list):
+  RAA trusted : yes  (RAA 255, DET 200100303FC000059024E82A8FD0AFB8)
+  HDA trusted : yes  -> HDA_TRUSTED level (HDA 255/14340, DET 200100303FF80405D162233E9B7EFEEE)
+  UA enrolled : yes  -> UA_ENROLLED level (this exact DET is individually listed)
+
+DET<->key binding (RFC 9374 3.5.2):
+  registered key : none on file
+  binding        : NOT CHECKED — no key registered for this DET (E-KEY-01)
+
+SUMMARY: DET 200100303FF804055C767822E2ED15BC claims RAA=255/HDA=14340, is on the allow-list (individually enrolled) and its zones nest. No public key is registered for this DET, so the binding was not checked.
+
+Findings:
+  [E-KEY-01] No public key known for this DET - signature/binding NOT checked
+         no public key registered for this DET — DET<->key binding NOT checked
+
+SUMMARY (findings per DET)
+ 1. Apex                             2001:30:0:5:70f9:e8e9:b564:f448          E-ZONE-01
+ 2. RAA, chain A                     2001:30:3fc0:5:9024:e82a:8fd0:afb8       E-ZONE-01
+ 3. HDA, chain A                     2001:30:3ff8:405:d162:233e:9b7e:feee     none
+ 4. RAA, chain B                     2001:30:fa00:5:d18f:f62a:f870:d730       E-ZONE-01
+ 5. HDA, chain B                     2001:30:fa07:d005:f0d2:b5a:871b:a28      none
+ 6. RAA, chain C                     2001:3f:0:5:80a:9f96:d49f:7057           E-KEY-01, E-TRUST-01, E-ZONE-01
+ 7. HDA, chain C                     2001:3f:0:6405:f18a:e883:952e:9b04       E-KEY-01, E-TRUST-01, E-ZONE-01
+ 8. UA identity 0                    2001:30:3ff8:405:d952:5618:fbc9:c3cf     none
+ 9. UA identity 1                    2001:30:3ff8:405:8412:4323:5d3c:a050     none
+10. UA identity 2                    2001:30:3ff8:405:a57e:87ab:5388:cbb8     none
+11. UA identity 3 (malformed DET)    2001:30:3ff8:405:b113:9c81:d46a:cb85     E-KEY-01
+12. UA identity 4 (chain C)          2001:3f:0:6405:b6ae:eea3:d5b:898c        E-KEY-01, E-TRUST-01, E-ZONE-01
+13. UA identity 5 (bad endorsement)  2001:30:3ff8:405:a5c7:51d1:7b8c:6526     E-KEY-01
+14. Listed with no key               2001:30:3ff8:405:5c76:7822:e2ed:15bc     E-KEY-01

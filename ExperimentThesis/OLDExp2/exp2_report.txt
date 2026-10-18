@@ -1,0 +1,36 @@
+Trust anchor: hierarchy.json  apex=2001:30:0:5:70f9:e8e9:b564:f448
+Ed25519 backend: cryptography 47.0.0 (OpenSSL)
+  self-test: agrees with ed25519.py on RFC 8032 §7.1 TEST 1 (valid accepted, tampered rejected)
+Input format: A (air capture - DRIP_Sniffer)
+DRIP payloads decoded: 1424
+Decoded items: 13765
+
+Message-type counts:
+    8544  Authentication
+    1424  Basic ID
+    1424  Location/Vector
+    1424  Authentication (reassembled)
+     949  System
+
+Capture health: 1,424/1,425 frames intact (99.93%)
+  1 frame(s) DISCARDED - damaged in the capture pipeline (serial byte loss), not on the air.
+  These are W-CAP-01, not DRIP defects. Findings from the surrounding frames may be collateral.
+
+Identities observed: 1 drone(s)
+
+  #  DET                                      MAC(s)                packs  key from                               auth
+  1  2001:30:3ff8:405:d952:5618:fbc9:c3cf     02:44:52:49:50:00      1424  trust file (slot 0)                    OK  (238 wrap, 237 man)
+
+Key provenance: 8 from trust file
+
+Findings by DET:
+  2001:30:3ff8:405:d952:5618:fbc9:c3cf  [trusted]  0 finding(s)
+  (unattributed - format/pack level)  1 finding(s)
+        W-CAP-01 x1
+
+Findings:
+  W-CAP-01  x1  Frame discarded: byte count contradicts the sniffer's own declared length - the frame was damaged in the CAPTURE PIPELINE (serial byte loss), not on the air. NOT a DRIP or ASTM defect, and says nothing about the drone that sent it
+          constraint: DRIP_Sniffer '#F ... len=' contract. The 802.11 FCS is checked in hardware before a frame is ever delivered to the sniffer, so RF corruption cannot reach here; missing bytes mean the serial link or the logger dropped them.
+          - @ capture  (declared len=271, got 239 B)
+
+Total findings: 1

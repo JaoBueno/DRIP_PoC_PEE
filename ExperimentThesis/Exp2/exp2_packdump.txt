@@ -1,0 +1,897 @@
+[Fleet] pack dump -> slot 0 (focused)
+[Playback] drone 0 selected flight 2: F6Z9A24AAML33B85-1108 (329 points, ~11.7 min)
+[Wrapper] Extended OK — 3 msg(s) signed, 5 pages, VNB=245811039 VNA=245811159 sign=OK
+[Manifest] pack_hash updated: 5E4EE893D0A27145
+
+=================================================
+  TX cnt=0xEB (235) | Cycle A — Wrapper
+  drone 0  MAC=02:44:52:49:50:00
+  drone DET = 2001:0030:3FF8:0405:D952:5618:FBC9:C3CF
+=================================================
+
+[VSIE] elem_id=0xDD  body_len=208  total=210 bytes
+       OUI=FA-0B-BC  vendor_type=0x0D  counter=0xEB
+  0x00: DD D0 FA 0B BC 0D EB F2 19 08 02 45 01 20 01 00
+  0x10: 30 3F F8 04 05 D9 52 56 18 FB C9 C3 CF 00 00 00
+  0x20: 00 00 00 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4
+  0x30: FF FF 77 08 77 08 00 00 B6 76 00 00 42 40 02 F4
+  0x40: DF F1 2C 45 2A E4 01 00 00 67 09 D0 07 00 77 08
+  0x50: 5F C7 A6 0E 00 22 50 04 59 5F C7 A6 0E 02 5F C7
+  0x60: A6 0E D7 C7 A6 0E 20 01 00 30 3F F8 04 05 22 51
+  0x70: D9 52 56 18 FB C9 C3 CF 8E 59 C7 24 2E 4A 92 2B
+  0x80: 95 64 51 84 64 75 AC 22 52 2E 0D CD 8E 64 59 D4
+  0x90: B1 A0 6B BE F5 97 46 BC ED 1A 9B 93 3F B6 C5 7C
+  0xA0: 22 53 FC B2 EC 42 62 12 E9 4E 5C 62 D7 85 57 A5
+  0xB0: 57 AB 3A DC 40 56 3F F3 AD 22 54 B0 1F 0E 00 00
+  0xC0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0xD0: 00 00
+
+[Pack] 8 messages, 203 bytes
+       hdr=[F2 19 08]  msg_size=25  count=8
+  0x00: F2 19 08 02 45 01 20 01 00 30 3F F8 04 05 D9 52
+  0x10: 56 18 FB C9 C3 CF 00 00 00 00 00 00 12 20 00 00
+  0x20: 00 02 F4 DF F1 2C 45 2A E4 FF FF 77 08 77 08 00
+  0x30: 00 B6 76 00 00 42 40 02 F4 DF F1 2C 45 2A E4 01
+  0x40: 00 00 67 09 D0 07 00 77 08 5F C7 A6 0E 00 22 50
+  0x50: 04 59 5F C7 A6 0E 02 5F C7 A6 0E D7 C7 A6 0E 20
+  0x60: 01 00 30 3F F8 04 05 22 51 D9 52 56 18 FB C9 C3
+  0x70: CF 8E 59 C7 24 2E 4A 92 2B 95 64 51 84 64 75 AC
+  0x80: 22 52 2E 0D CD 8E 64 59 D4 B1 A0 6B BE F5 97 46
+  0x90: BC ED 1A 9B 93 3F B6 C5 7C 22 53 FC B2 EC 42 62
+  0xA0: 12 E9 4E 5C 62 D7 85 57 A5 57 AB 3A DC 40 56 3F
+  0xB0: F3 AD 22 54 B0 1F 0E 00 00 00 00 00 00 00 00 00
+  0xC0: 00 00 00 00 00 00 00 00 00 00 00
+
+[Msg 00] Basic ID  (type=0x0  ver=0x2)
+  0x00: 02 45 01 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 00 00 00 00 00 00
+
+[Msg 01] Location  (type=0x1  ver=0x2)
+  0x00: 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4 FF FF 77
+  0x10: 08 77 08 00 00 B6 76 00 00
+
+[Msg 02] System  (type=0x4  ver=0x2)
+  0x00: 42 40 02 F4 DF F1 2C 45 2A E4 01 00 00 67 09 D0
+  0x10: 07 00 77 08 5F C7 A6 0E 00
+
+[Msg 03] Auth Page 0  (AuthType=0x5 SAM, LastPageIdx=4, 5 page(s))
+         Length=89  Timestamp=245811039
+         SAM_type=0x02  →  Wrapper   (SAM data length=89)
+         VNB=245811039  VNA=245811159
+         Evidence: (cleared - Extended Transport, signed over the co-located pack messages)
+         UA DET     : 200100303FF80405D9525618FBC9C3CF
+         Sig (UA)   : 8E59C7242E4A922B956451846475AC2E...(64B)
+         -- page 0 (byte1=0x50) --
+  0x00: 22 50 04 59 5F C7 A6 0E 02 5F C7 A6 0E D7 C7 A6
+  0x10: 0E 20 01 00 30 3F F8 04 05
+         -- page 1 (byte1=0x51) --
+  0x00: 22 51 D9 52 56 18 FB C9 C3 CF 8E 59 C7 24 2E 4A
+  0x10: 92 2B 95 64 51 84 64 75 AC
+         -- page 2 (byte1=0x52) --
+  0x00: 22 52 2E 0D CD 8E 64 59 D4 B1 A0 6B BE F5 97 46
+  0x10: BC ED 1A 9B 93 3F B6 C5 7C
+         -- page 3 (byte1=0x53) --
+  0x00: 22 53 FC B2 EC 42 62 12 E9 4E 5C 62 D7 85 57 A5
+  0x10: 57 AB 3A DC 40 56 3F F3 AD
+         -- page 4 (byte1=0x54) --
+  0x00: 22 54 B0 1F 0E 00 00 00 00 00 00 00 00 00 00 00
+  0x10: 00 00 00 00 00 00 00 00 00
+=================================================
+[Manifest] link_hash updated (BE:HDA,UA): 35F8F842CFAC1EFA
+
+=================================================
+  TX cnt=0xEC (236) | Cycle B — Link / BE chain
+  drone 0  MAC=02:44:52:49:50:00
+  drone DET = 2001:0030:3FF8:0405:D952:5618:FBC9:C3CF
+=================================================
+
+[VSIE] elem_id=0xDD  body_len=233  total=235 bytes
+       OUI=FA-0B-BC  vendor_type=0x0D  counter=0xEC
+  0x00: DD E9 FA 0B BC 0D EC F2 19 09 02 45 01 20 01 00
+  0x10: 30 3F F8 04 05 D9 52 56 18 FB C9 C3 CF 00 00 00
+  0x20: 00 00 00 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4
+  0x30: FF FF 77 08 77 08 00 00 C0 76 00 00 22 50 06 89
+  0x40: 2E BF A6 0E 01 2E BF A6 0E AE 10 A8 0E 20 01 00
+  0x50: 30 3F F8 04 05 22 51 D9 52 56 18 FB C9 C3 CF F5
+  0x60: 05 70 4E B5 44 F8 61 19 0F 2D 8E DA C9 BA 22 52
+  0x70: 83 F3 20 D5 E3 87 26 B3 F5 1C 22 08 51 32 0E C7
+  0x80: E6 20 01 00 30 3F F8 22 53 04 05 D1 62 23 3E 9B
+  0x90: 7E FE EE F8 7A 0D 84 D3 04 99 F7 AA 47 16 4E 97
+  0xA0: 22 54 8B 56 8C EE 96 72 3E C3 AF E5 B3 21 B0 E6
+  0xB0: 50 C8 D8 22 01 34 3C 1B 0B 22 55 85 42 89 22 64
+  0xC0: 47 CB AD E1 7A 70 04 B9 4C E8 D2 A4 D1 BF 39 E7
+  0xD0: 3C B3 22 56 46 44 4A 28 06 00 00 00 00 00 00 00
+  0xE0: 00 00 00 00 00 00 00 00 00 00 00
+
+[Pack] 9 messages, 228 bytes
+       hdr=[F2 19 09]  msg_size=25  count=9
+  0x00: F2 19 09 02 45 01 20 01 00 30 3F F8 04 05 D9 52
+  0x10: 56 18 FB C9 C3 CF 00 00 00 00 00 00 12 20 00 00
+  0x20: 00 02 F4 DF F1 2C 45 2A E4 FF FF 77 08 77 08 00
+  0x30: 00 C0 76 00 00 22 50 06 89 2E BF A6 0E 01 2E BF
+  0x40: A6 0E AE 10 A8 0E 20 01 00 30 3F F8 04 05 22 51
+  0x50: D9 52 56 18 FB C9 C3 CF F5 05 70 4E B5 44 F8 61
+  0x60: 19 0F 2D 8E DA C9 BA 22 52 83 F3 20 D5 E3 87 26
+  0x70: B3 F5 1C 22 08 51 32 0E C7 E6 20 01 00 30 3F F8
+  0x80: 22 53 04 05 D1 62 23 3E 9B 7E FE EE F8 7A 0D 84
+  0x90: D3 04 99 F7 AA 47 16 4E 97 22 54 8B 56 8C EE 96
+  0xA0: 72 3E C3 AF E5 B3 21 B0 E6 50 C8 D8 22 01 34 3C
+  0xB0: 1B 0B 22 55 85 42 89 22 64 47 CB AD E1 7A 70 04
+  0xC0: B9 4C E8 D2 A4 D1 BF 39 E7 3C B3 22 56 46 44 4A
+  0xD0: 28 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0xE0: 00 00 00 00
+
+[Msg 00] Basic ID  (type=0x0  ver=0x2)
+  0x00: 02 45 01 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 00 00 00 00 00 00
+
+[Msg 01] Location  (type=0x1  ver=0x2)
+  0x00: 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4 FF FF 77
+  0x10: 08 77 08 00 00 C0 76 00 00
+
+[Msg 02] Auth Page 0  (AuthType=0x5 SAM, LastPageIdx=6, 7 page(s))
+         Length=137  Timestamp=245808942
+         SAM_type=0x01  →  Link (Broadcast Endorsement)   (SAM data length=137)
+         VNB=245808942  VNA=245895342
+         DET(child) : 200100303FF80405D9525618FBC9C3CF
+         HI (child) : F505704EB544F861190F2D8EDAC9BA83F320D5E38726B3F51C220851320EC7E6
+         DET(parent): 200100303FF80405D162233E9B7EFEEE
+         Sig(parent): F87A0D84D30499F7AA47164E978B568C...(64B)
+         -- page 0 (byte1=0x50) --
+  0x00: 22 50 06 89 2E BF A6 0E 01 2E BF A6 0E AE 10 A8
+  0x10: 0E 20 01 00 30 3F F8 04 05
+         -- page 1 (byte1=0x51) --
+  0x00: 22 51 D9 52 56 18 FB C9 C3 CF F5 05 70 4E B5 44
+  0x10: F8 61 19 0F 2D 8E DA C9 BA
+         -- page 2 (byte1=0x52) --
+  0x00: 22 52 83 F3 20 D5 E3 87 26 B3 F5 1C 22 08 51 32
+  0x10: 0E C7 E6 20 01 00 30 3F F8
+         -- page 3 (byte1=0x53) --
+  0x00: 22 53 04 05 D1 62 23 3E 9B 7E FE EE F8 7A 0D 84
+  0x10: D3 04 99 F7 AA 47 16 4E 97
+         -- page 4 (byte1=0x54) --
+  0x00: 22 54 8B 56 8C EE 96 72 3E C3 AF E5 B3 21 B0 E6
+  0x10: 50 C8 D8 22 01 34 3C 1B 0B
+         -- page 5 (byte1=0x55) --
+  0x00: 22 55 85 42 89 22 64 47 CB AD E1 7A 70 04 B9 4C
+  0x10: E8 D2 A4 D1 BF 39 E7 3C B3
+         -- page 6 (byte1=0x56) --
+  0x00: 22 56 46 44 4A 28 06 00 00 00 00 00 00 00 00 00
+  0x10: 00 00 00 00 00 00 00 00 00
+=================================================
+[Manifest] Built OK — 6 pages, VNB=245811041 VNA=245811161 sign=OK
+[Manifest] curr_hash: B2CD1E3B4BB03156
+
+=================================================
+  TX cnt=0xED (237) | Cycle C — Manifest
+  drone 0  MAC=02:44:52:49:50:00
+  drone DET = 2001:0030:3FF8:0405:D952:5618:FBC9:C3CF
+=================================================
+
+[VSIE] elem_id=0xDD  body_len=233  total=235 bytes
+       OUI=FA-0B-BC  vendor_type=0x0D  counter=0xED
+  0x00: DD E9 FA 0B BC 0D ED F2 19 09 02 45 01 20 01 00
+  0x10: 30 3F F8 04 05 D9 52 56 18 FB C9 C3 CF 00 00 00
+  0x20: 00 00 00 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4
+  0x30: FF FF 77 08 77 08 00 00 CA 76 00 00 42 40 02 F4
+  0x40: DF F1 2C 45 2A E4 01 00 00 67 09 D0 07 00 77 08
+  0x50: 61 C7 A6 0E 00 22 50 05 79 61 C7 A6 0E 03 61 C7
+  0x60: A6 0E D9 C7 A6 0E 9B 5C 4F EA AA 95 CF B6 22 51
+  0x70: B2 CD 1E 3B 4B B0 31 56 35 F8 F8 42 CF AC 1E FA
+  0x80: 5E 4E E8 93 D0 A2 71 22 52 45 20 01 00 30 3F F8
+  0x90: 04 05 D9 52 56 18 FB C9 C3 CF 07 6D C2 A9 06 BC
+  0xA0: 22 53 4B 85 C3 C8 DE F0 85 09 D6 C8 E9 0E 76 4A
+  0xB0: D2 60 1F 59 86 AC BB EA 27 22 54 4C FE 7B E8 47
+  0xC0: 75 6D F9 F8 6B A4 B0 AE 5C 46 CD 66 94 A2 C6 67
+  0xD0: C3 34 22 55 CF 72 AA 47 78 0A 82 EB 73 1B BD 01
+  0xE0: 00 00 00 00 00 00 00 00 00 00 00
+
+[Pack] 9 messages, 228 bytes
+       hdr=[F2 19 09]  msg_size=25  count=9
+  0x00: F2 19 09 02 45 01 20 01 00 30 3F F8 04 05 D9 52
+  0x10: 56 18 FB C9 C3 CF 00 00 00 00 00 00 12 20 00 00
+  0x20: 00 02 F4 DF F1 2C 45 2A E4 FF FF 77 08 77 08 00
+  0x30: 00 CA 76 00 00 42 40 02 F4 DF F1 2C 45 2A E4 01
+  0x40: 00 00 67 09 D0 07 00 77 08 61 C7 A6 0E 00 22 50
+  0x50: 05 79 61 C7 A6 0E 03 61 C7 A6 0E D9 C7 A6 0E 9B
+  0x60: 5C 4F EA AA 95 CF B6 22 51 B2 CD 1E 3B 4B B0 31
+  0x70: 56 35 F8 F8 42 CF AC 1E FA 5E 4E E8 93 D0 A2 71
+  0x80: 22 52 45 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x90: C9 C3 CF 07 6D C2 A9 06 BC 22 53 4B 85 C3 C8 DE
+  0xA0: F0 85 09 D6 C8 E9 0E 76 4A D2 60 1F 59 86 AC BB
+  0xB0: EA 27 22 54 4C FE 7B E8 47 75 6D F9 F8 6B A4 B0
+  0xC0: AE 5C 46 CD 66 94 A2 C6 67 C3 34 22 55 CF 72 AA
+  0xD0: 47 78 0A 82 EB 73 1B BD 01 00 00 00 00 00 00 00
+  0xE0: 00 00 00 00
+
+[Msg 00] Basic ID  (type=0x0  ver=0x2)
+  0x00: 02 45 01 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 00 00 00 00 00 00
+
+[Msg 01] Location  (type=0x1  ver=0x2)
+  0x00: 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4 FF FF 77
+  0x10: 08 77 08 00 00 CA 76 00 00
+
+[Msg 02] System  (type=0x4  ver=0x2)
+  0x00: 42 40 02 F4 DF F1 2C 45 2A E4 01 00 00 67 09 D0
+  0x10: 07 00 77 08 61 C7 A6 0E 00
+
+[Msg 03] Auth Page 0  (AuthType=0x5 SAM, LastPageIdx=5, 6 page(s))
+         Length=121  Timestamp=245811041
+         SAM_type=0x03  →  Manifest   (SAM data length=121)
+         VNB=245811041  VNA=245811161
+         Hash(Previous): 9B5C4FEAAA95CFB6
+         Hash(Current) : B2CD1E3B4BB03156
+         Hash(Link)    : 35F8F842CFAC1EFA
+         Hash(Pack)    : 5E4EE893D0A27145
+         UA DET        : 200100303FF80405D9525618FBC9C3CF
+         Sig (UA)      : 076DC2A906BC4B85C3C8DEF08509D6C8...(64B)
+         -- page 0 (byte1=0x50) --
+  0x00: 22 50 05 79 61 C7 A6 0E 03 61 C7 A6 0E D9 C7 A6
+  0x10: 0E 9B 5C 4F EA AA 95 CF B6
+         -- page 1 (byte1=0x51) --
+  0x00: 22 51 B2 CD 1E 3B 4B B0 31 56 35 F8 F8 42 CF AC
+  0x10: 1E FA 5E 4E E8 93 D0 A2 71
+         -- page 2 (byte1=0x52) --
+  0x00: 22 52 45 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 07 6D C2 A9 06 BC
+         -- page 3 (byte1=0x53) --
+  0x00: 22 53 4B 85 C3 C8 DE F0 85 09 D6 C8 E9 0E 76 4A
+  0x10: D2 60 1F 59 86 AC BB EA 27
+         -- page 4 (byte1=0x54) --
+  0x00: 22 54 4C FE 7B E8 47 75 6D F9 F8 6B A4 B0 AE 5C
+  0x10: 46 CD 66 94 A2 C6 67 C3 34
+         -- page 5 (byte1=0x55) --
+  0x00: 22 55 CF 72 AA 47 78 0A 82 EB 73 1B BD 01 00 00
+  0x10: 00 00 00 00 00 00 00 00 00
+=================================================
+[Wrapper] Extended OK — 3 msg(s) signed, 5 pages, VNB=245811042 VNA=245811162 sign=OK
+[Manifest] pack_hash updated: 0C55DC4865672BAD
+
+=================================================
+  TX cnt=0xEE (238) | Cycle A — Wrapper
+  drone 0  MAC=02:44:52:49:50:00
+  drone DET = 2001:0030:3FF8:0405:D952:5618:FBC9:C3CF
+=================================================
+
+[VSIE] elem_id=0xDD  body_len=208  total=210 bytes
+       OUI=FA-0B-BC  vendor_type=0x0D  counter=0xEE
+  0x00: DD D0 FA 0B BC 0D EE F2 19 08 02 45 01 20 01 00
+  0x10: 30 3F F8 04 05 D9 52 56 18 FB C9 C3 CF 00 00 00
+  0x20: 00 00 00 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4
+  0x30: FF FF 77 08 77 08 00 00 D4 76 00 00 42 40 02 F4
+  0x40: DF F1 2C 45 2A E4 01 00 00 67 09 D0 07 00 77 08
+  0x50: 62 C7 A6 0E 00 22 50 04 59 62 C7 A6 0E 02 62 C7
+  0x60: A6 0E DA C7 A6 0E 20 01 00 30 3F F8 04 05 22 51
+  0x70: D9 52 56 18 FB C9 C3 CF D8 9B 41 43 4A 65 A7 78
+  0x80: 63 9E 0D D7 30 92 60 22 52 DC 80 3F CF 0D 55 75
+  0x90: 5D 08 10 98 AF 7B 38 18 59 85 47 9B 40 01 A6 DE
+  0xA0: 22 53 A8 8A DD D9 CE 56 B8 34 67 4B 32 0B B2 55
+  0xB0: 32 B0 EE 65 E6 F5 74 68 BD 22 54 1A 40 03 00 00
+  0xC0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0xD0: 00 00
+
+[Pack] 8 messages, 203 bytes
+       hdr=[F2 19 08]  msg_size=25  count=8
+  0x00: F2 19 08 02 45 01 20 01 00 30 3F F8 04 05 D9 52
+  0x10: 56 18 FB C9 C3 CF 00 00 00 00 00 00 12 20 00 00
+  0x20: 00 02 F4 DF F1 2C 45 2A E4 FF FF 77 08 77 08 00
+  0x30: 00 D4 76 00 00 42 40 02 F4 DF F1 2C 45 2A E4 01
+  0x40: 00 00 67 09 D0 07 00 77 08 62 C7 A6 0E 00 22 50
+  0x50: 04 59 62 C7 A6 0E 02 62 C7 A6 0E DA C7 A6 0E 20
+  0x60: 01 00 30 3F F8 04 05 22 51 D9 52 56 18 FB C9 C3
+  0x70: CF D8 9B 41 43 4A 65 A7 78 63 9E 0D D7 30 92 60
+  0x80: 22 52 DC 80 3F CF 0D 55 75 5D 08 10 98 AF 7B 38
+  0x90: 18 59 85 47 9B 40 01 A6 DE 22 53 A8 8A DD D9 CE
+  0xA0: 56 B8 34 67 4B 32 0B B2 55 32 B0 EE 65 E6 F5 74
+  0xB0: 68 BD 22 54 1A 40 03 00 00 00 00 00 00 00 00 00
+  0xC0: 00 00 00 00 00 00 00 00 00 00 00
+
+[Msg 00] Basic ID  (type=0x0  ver=0x2)
+  0x00: 02 45 01 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 00 00 00 00 00 00
+
+[Msg 01] Location  (type=0x1  ver=0x2)
+  0x00: 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4 FF FF 77
+  0x10: 08 77 08 00 00 D4 76 00 00
+
+[Msg 02] System  (type=0x4  ver=0x2)
+  0x00: 42 40 02 F4 DF F1 2C 45 2A E4 01 00 00 67 09 D0
+  0x10: 07 00 77 08 62 C7 A6 0E 00
+
+[Msg 03] Auth Page 0  (AuthType=0x5 SAM, LastPageIdx=4, 5 page(s))
+         Length=89  Timestamp=245811042
+         SAM_type=0x02  →  Wrapper   (SAM data length=89)
+         VNB=245811042  VNA=245811162
+         Evidence: (cleared - Extended Transport, signed over the co-located pack messages)
+         UA DET     : 200100303FF80405D9525618FBC9C3CF
+         Sig (UA)   : D89B41434A65A778639E0DD7309260DC...(64B)
+         -- page 0 (byte1=0x50) --
+  0x00: 22 50 04 59 62 C7 A6 0E 02 62 C7 A6 0E DA C7 A6
+  0x10: 0E 20 01 00 30 3F F8 04 05
+         -- page 1 (byte1=0x51) --
+  0x00: 22 51 D9 52 56 18 FB C9 C3 CF D8 9B 41 43 4A 65
+  0x10: A7 78 63 9E 0D D7 30 92 60
+         -- page 2 (byte1=0x52) --
+  0x00: 22 52 DC 80 3F CF 0D 55 75 5D 08 10 98 AF 7B 38
+  0x10: 18 59 85 47 9B 40 01 A6 DE
+         -- page 3 (byte1=0x53) --
+  0x00: 22 53 A8 8A DD D9 CE 56 B8 34 67 4B 32 0B B2 55
+  0x10: 32 B0 EE 65 E6 F5 74 68 BD
+         -- page 4 (byte1=0x54) --
+  0x00: 22 54 1A 40 03 00 00 00 00 00 00 00 00 00 00 00
+  0x10: 00 00 00 00 00 00 00 00 00
+=================================================
+[Manifest] link_hash updated (BE:HDA,UA): 35F8F842CFAC1EFA
+
+=================================================
+  TX cnt=0xEF (239) | Cycle B — Link / BE chain
+  drone 0  MAC=02:44:52:49:50:00
+  drone DET = 2001:0030:3FF8:0405:D952:5618:FBC9:C3CF
+=================================================
+
+[VSIE] elem_id=0xDD  body_len=233  total=235 bytes
+       OUI=FA-0B-BC  vendor_type=0x0D  counter=0xEF
+  0x00: DD E9 FA 0B BC 0D EF F2 19 09 02 45 01 20 01 00
+  0x10: 30 3F F8 04 05 D9 52 56 18 FB C9 C3 CF 00 00 00
+  0x20: 00 00 00 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4
+  0x30: FF FF 77 08 77 08 00 00 DE 76 00 00 22 50 06 89
+  0x40: 2E BF A6 0E 01 2E BF A6 0E AE 10 A8 0E 20 01 00
+  0x50: 30 3F F8 04 05 22 51 D9 52 56 18 FB C9 C3 CF F5
+  0x60: 05 70 4E B5 44 F8 61 19 0F 2D 8E DA C9 BA 22 52
+  0x70: 83 F3 20 D5 E3 87 26 B3 F5 1C 22 08 51 32 0E C7
+  0x80: E6 20 01 00 30 3F F8 22 53 04 05 D1 62 23 3E 9B
+  0x90: 7E FE EE F8 7A 0D 84 D3 04 99 F7 AA 47 16 4E 97
+  0xA0: 22 54 8B 56 8C EE 96 72 3E C3 AF E5 B3 21 B0 E6
+  0xB0: 50 C8 D8 22 01 34 3C 1B 0B 22 55 85 42 89 22 64
+  0xC0: 47 CB AD E1 7A 70 04 B9 4C E8 D2 A4 D1 BF 39 E7
+  0xD0: 3C B3 22 56 46 44 4A 28 06 00 00 00 00 00 00 00
+  0xE0: 00 00 00 00 00 00 00 00 00 00 00
+
+[Pack] 9 messages, 228 bytes
+       hdr=[F2 19 09]  msg_size=25  count=9
+  0x00: F2 19 09 02 45 01 20 01 00 30 3F F8 04 05 D9 52
+  0x10: 56 18 FB C9 C3 CF 00 00 00 00 00 00 12 20 00 00
+  0x20: 00 02 F4 DF F1 2C 45 2A E4 FF FF 77 08 77 08 00
+  0x30: 00 DE 76 00 00 22 50 06 89 2E BF A6 0E 01 2E BF
+  0x40: A6 0E AE 10 A8 0E 20 01 00 30 3F F8 04 05 22 51
+  0x50: D9 52 56 18 FB C9 C3 CF F5 05 70 4E B5 44 F8 61
+  0x60: 19 0F 2D 8E DA C9 BA 22 52 83 F3 20 D5 E3 87 26
+  0x70: B3 F5 1C 22 08 51 32 0E C7 E6 20 01 00 30 3F F8
+  0x80: 22 53 04 05 D1 62 23 3E 9B 7E FE EE F8 7A 0D 84
+  0x90: D3 04 99 F7 AA 47 16 4E 97 22 54 8B 56 8C EE 96
+  0xA0: 72 3E C3 AF E5 B3 21 B0 E6 50 C8 D8 22 01 34 3C
+  0xB0: 1B 0B 22 55 85 42 89 22 64 47 CB AD E1 7A 70 04
+  0xC0: B9 4C E8 D2 A4 D1 BF 39 E7 3C B3 22 56 46 44 4A
+  0xD0: 28 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0xE0: 00 00 00 00
+
+[Msg 00] Basic ID  (type=0x0  ver=0x2)
+  0x00: 02 45 01 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 00 00 00 00 00 00
+
+[Msg 01] Location  (type=0x1  ver=0x2)
+  0x00: 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4 FF FF 77
+  0x10: 08 77 08 00 00 DE 76 00 00
+
+[Msg 02] Auth Page 0  (AuthType=0x5 SAM, LastPageIdx=6, 7 page(s))
+         Length=137  Timestamp=245808942
+         SAM_type=0x01  →  Link (Broadcast Endorsement)   (SAM data length=137)
+         VNB=245808942  VNA=245895342
+         DET(child) : 200100303FF80405D9525618FBC9C3CF
+         HI (child) : F505704EB544F861190F2D8EDAC9BA83F320D5E38726B3F51C220851320EC7E6
+         DET(parent): 200100303FF80405D162233E9B7EFEEE
+         Sig(parent): F87A0D84D30499F7AA47164E978B568C...(64B)
+         -- page 0 (byte1=0x50) --
+  0x00: 22 50 06 89 2E BF A6 0E 01 2E BF A6 0E AE 10 A8
+  0x10: 0E 20 01 00 30 3F F8 04 05
+         -- page 1 (byte1=0x51) --
+  0x00: 22 51 D9 52 56 18 FB C9 C3 CF F5 05 70 4E B5 44
+  0x10: F8 61 19 0F 2D 8E DA C9 BA
+         -- page 2 (byte1=0x52) --
+  0x00: 22 52 83 F3 20 D5 E3 87 26 B3 F5 1C 22 08 51 32
+  0x10: 0E C7 E6 20 01 00 30 3F F8
+         -- page 3 (byte1=0x53) --
+  0x00: 22 53 04 05 D1 62 23 3E 9B 7E FE EE F8 7A 0D 84
+  0x10: D3 04 99 F7 AA 47 16 4E 97
+         -- page 4 (byte1=0x54) --
+  0x00: 22 54 8B 56 8C EE 96 72 3E C3 AF E5 B3 21 B0 E6
+  0x10: 50 C8 D8 22 01 34 3C 1B 0B
+         -- page 5 (byte1=0x55) --
+  0x00: 22 55 85 42 89 22 64 47 CB AD E1 7A 70 04 B9 4C
+  0x10: E8 D2 A4 D1 BF 39 E7 3C B3
+         -- page 6 (byte1=0x56) --
+  0x00: 22 56 46 44 4A 28 06 00 00 00 00 00 00 00 00 00
+  0x10: 00 00 00 00 00 00 00 00 00
+=================================================
+[Manifest] Built OK — 6 pages, VNB=245811044 VNA=245811164 sign=OK
+[Manifest] curr_hash: E68021DED79DB832
+
+=================================================
+  TX cnt=0xF0 (240) | Cycle C — Manifest
+  drone 0  MAC=02:44:52:49:50:00
+  drone DET = 2001:0030:3FF8:0405:D952:5618:FBC9:C3CF
+=================================================
+
+[VSIE] elem_id=0xDD  body_len=233  total=235 bytes
+       OUI=FA-0B-BC  vendor_type=0x0D  counter=0xF0
+  0x00: DD E9 FA 0B BC 0D F0 F2 19 09 02 45 01 20 01 00
+  0x10: 30 3F F8 04 05 D9 52 56 18 FB C9 C3 CF 00 00 00
+  0x20: 00 00 00 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4
+  0x30: FF FF 77 08 77 08 00 00 E8 76 00 00 42 40 02 F4
+  0x40: DF F1 2C 45 2A E4 01 00 00 67 09 D0 07 00 77 08
+  0x50: 64 C7 A6 0E 00 22 50 05 79 64 C7 A6 0E 03 64 C7
+  0x60: A6 0E DC C7 A6 0E B2 CD 1E 3B 4B B0 31 56 22 51
+  0x70: E6 80 21 DE D7 9D B8 32 35 F8 F8 42 CF AC 1E FA
+  0x80: 0C 55 DC 48 65 67 2B 22 52 AD 20 01 00 30 3F F8
+  0x90: 04 05 D9 52 56 18 FB C9 C3 CF 65 C4 75 3F 6D C2
+  0xA0: 22 53 5F 03 E9 65 50 90 19 7E 4B 3E C8 BC E4 B7
+  0xB0: C2 66 58 D1 5F 5F 2E C7 1E 22 54 36 4C 80 59 51
+  0xC0: E5 0F 08 12 73 69 BA 45 C0 03 1B A9 4D 0E A2 3A
+  0xD0: 7C 06 22 55 8F 71 7B 40 C6 7F A3 81 5F CD C5 03
+  0xE0: 00 00 00 00 00 00 00 00 00 00 00
+
+[Pack] 9 messages, 228 bytes
+       hdr=[F2 19 09]  msg_size=25  count=9
+  0x00: F2 19 09 02 45 01 20 01 00 30 3F F8 04 05 D9 52
+  0x10: 56 18 FB C9 C3 CF 00 00 00 00 00 00 12 20 00 00
+  0x20: 00 02 F4 DF F1 2C 45 2A E4 FF FF 77 08 77 08 00
+  0x30: 00 E8 76 00 00 42 40 02 F4 DF F1 2C 45 2A E4 01
+  0x40: 00 00 67 09 D0 07 00 77 08 64 C7 A6 0E 00 22 50
+  0x50: 05 79 64 C7 A6 0E 03 64 C7 A6 0E DC C7 A6 0E B2
+  0x60: CD 1E 3B 4B B0 31 56 22 51 E6 80 21 DE D7 9D B8
+  0x70: 32 35 F8 F8 42 CF AC 1E FA 0C 55 DC 48 65 67 2B
+  0x80: 22 52 AD 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x90: C9 C3 CF 65 C4 75 3F 6D C2 22 53 5F 03 E9 65 50
+  0xA0: 90 19 7E 4B 3E C8 BC E4 B7 C2 66 58 D1 5F 5F 2E
+  0xB0: C7 1E 22 54 36 4C 80 59 51 E5 0F 08 12 73 69 BA
+  0xC0: 45 C0 03 1B A9 4D 0E A2 3A 7C 06 22 55 8F 71 7B
+  0xD0: 40 C6 7F A3 81 5F CD C5 03 00 00 00 00 00 00 00
+  0xE0: 00 00 00 00
+
+[Msg 00] Basic ID  (type=0x0  ver=0x2)
+  0x00: 02 45 01 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 00 00 00 00 00 00
+
+[Msg 01] Location  (type=0x1  ver=0x2)
+  0x00: 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4 FF FF 77
+  0x10: 08 77 08 00 00 E8 76 00 00
+
+[Msg 02] System  (type=0x4  ver=0x2)
+  0x00: 42 40 02 F4 DF F1 2C 45 2A E4 01 00 00 67 09 D0
+  0x10: 07 00 77 08 64 C7 A6 0E 00
+
+[Msg 03] Auth Page 0  (AuthType=0x5 SAM, LastPageIdx=5, 6 page(s))
+         Length=121  Timestamp=245811044
+         SAM_type=0x03  →  Manifest   (SAM data length=121)
+         VNB=245811044  VNA=245811164
+         Hash(Previous): B2CD1E3B4BB03156
+         Hash(Current) : E68021DED79DB832
+         Hash(Link)    : 35F8F842CFAC1EFA
+         Hash(Pack)    : 0C55DC4865672BAD
+         UA DET        : 200100303FF80405D9525618FBC9C3CF
+         Sig (UA)      : 65C4753F6DC25F03E9655090197E4B3E...(64B)
+         -- page 0 (byte1=0x50) --
+  0x00: 22 50 05 79 64 C7 A6 0E 03 64 C7 A6 0E DC C7 A6
+  0x10: 0E B2 CD 1E 3B 4B B0 31 56
+         -- page 1 (byte1=0x51) --
+  0x00: 22 51 E6 80 21 DE D7 9D B8 32 35 F8 F8 42 CF AC
+  0x10: 1E FA 0C 55 DC 48 65 67 2B
+         -- page 2 (byte1=0x52) --
+  0x00: 22 52 AD 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 65 C4 75 3F 6D C2
+         -- page 3 (byte1=0x53) --
+  0x00: 22 53 5F 03 E9 65 50 90 19 7E 4B 3E C8 BC E4 B7
+  0x10: C2 66 58 D1 5F 5F 2E C7 1E
+         -- page 4 (byte1=0x54) --
+  0x00: 22 54 36 4C 80 59 51 E5 0F 08 12 73 69 BA 45 C0
+  0x10: 03 1B A9 4D 0E A2 3A 7C 06
+         -- page 5 (byte1=0x55) --
+  0x00: 22 55 8F 71 7B 40 C6 7F A3 81 5F CD C5 03 00 00
+  0x10: 00 00 00 00 00 00 00 00 00
+=================================================
+[Wrapper] Extended OK — 3 msg(s) signed, 5 pages, VNB=245811045 VNA=245811165 sign=OK
+[Manifest] pack_hash updated: AE599BDA23E094EC
+
+=================================================
+  TX cnt=0xF1 (241) | Cycle A — Wrapper
+  drone 0  MAC=02:44:52:49:50:00
+  drone DET = 2001:0030:3FF8:0405:D952:5618:FBC9:C3CF
+=================================================
+
+[VSIE] elem_id=0xDD  body_len=208  total=210 bytes
+       OUI=FA-0B-BC  vendor_type=0x0D  counter=0xF1
+  0x00: DD D0 FA 0B BC 0D F1 F2 19 08 02 45 01 20 01 00
+  0x10: 30 3F F8 04 05 D9 52 56 18 FB C9 C3 CF 00 00 00
+  0x20: 00 00 00 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4
+  0x30: FF FF 77 08 77 08 00 00 F2 76 00 00 42 40 02 F4
+  0x40: DF F1 2C 45 2A E4 01 00 00 67 09 D0 07 00 77 08
+  0x50: 65 C7 A6 0E 00 22 50 04 59 65 C7 A6 0E 02 65 C7
+  0x60: A6 0E DD C7 A6 0E 20 01 00 30 3F F8 04 05 22 51
+  0x70: D9 52 56 18 FB C9 C3 CF 72 89 43 FD 89 8D B0 99
+  0x80: C8 85 83 8B 29 43 82 22 52 59 EA 41 82 E4 05 DC
+  0x90: E1 0A F3 8F 97 CC 6A 26 DC 45 19 14 00 02 DD 96
+  0xA0: 22 53 21 F3 2B 0B D6 5A 2E E0 D3 91 A6 0A 18 DC
+  0xB0: E2 8B 17 B4 9E 47 86 D1 E1 22 54 81 29 0C 00 00
+  0xC0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0xD0: 00 00
+
+[Pack] 8 messages, 203 bytes
+       hdr=[F2 19 08]  msg_size=25  count=8
+  0x00: F2 19 08 02 45 01 20 01 00 30 3F F8 04 05 D9 52
+  0x10: 56 18 FB C9 C3 CF 00 00 00 00 00 00 12 20 00 00
+  0x20: 00 02 F4 DF F1 2C 45 2A E4 FF FF 77 08 77 08 00
+  0x30: 00 F2 76 00 00 42 40 02 F4 DF F1 2C 45 2A E4 01
+  0x40: 00 00 67 09 D0 07 00 77 08 65 C7 A6 0E 00 22 50
+  0x50: 04 59 65 C7 A6 0E 02 65 C7 A6 0E DD C7 A6 0E 20
+  0x60: 01 00 30 3F F8 04 05 22 51 D9 52 56 18 FB C9 C3
+  0x70: CF 72 89 43 FD 89 8D B0 99 C8 85 83 8B 29 43 82
+  0x80: 22 52 59 EA 41 82 E4 05 DC E1 0A F3 8F 97 CC 6A
+  0x90: 26 DC 45 19 14 00 02 DD 96 22 53 21 F3 2B 0B D6
+  0xA0: 5A 2E E0 D3 91 A6 0A 18 DC E2 8B 17 B4 9E 47 86
+  0xB0: D1 E1 22 54 81 29 0C 00 00 00 00 00 00 00 00 00
+  0xC0: 00 00 00 00 00 00 00 00 00 00 00
+
+[Msg 00] Basic ID  (type=0x0  ver=0x2)
+  0x00: 02 45 01 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 00 00 00 00 00 00
+
+[Msg 01] Location  (type=0x1  ver=0x2)
+  0x00: 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4 FF FF 77
+  0x10: 08 77 08 00 00 F2 76 00 00
+
+[Msg 02] System  (type=0x4  ver=0x2)
+  0x00: 42 40 02 F4 DF F1 2C 45 2A E4 01 00 00 67 09 D0
+  0x10: 07 00 77 08 65 C7 A6 0E 00
+
+[Msg 03] Auth Page 0  (AuthType=0x5 SAM, LastPageIdx=4, 5 page(s))
+         Length=89  Timestamp=245811045
+         SAM_type=0x02  →  Wrapper   (SAM data length=89)
+         VNB=245811045  VNA=245811165
+         Evidence: (cleared - Extended Transport, signed over the co-located pack messages)
+         UA DET     : 200100303FF80405D9525618FBC9C3CF
+         Sig (UA)   : 728943FD898DB099C885838B29438259...(64B)
+         -- page 0 (byte1=0x50) --
+  0x00: 22 50 04 59 65 C7 A6 0E 02 65 C7 A6 0E DD C7 A6
+  0x10: 0E 20 01 00 30 3F F8 04 05
+         -- page 1 (byte1=0x51) --
+  0x00: 22 51 D9 52 56 18 FB C9 C3 CF 72 89 43 FD 89 8D
+  0x10: B0 99 C8 85 83 8B 29 43 82
+         -- page 2 (byte1=0x52) --
+  0x00: 22 52 59 EA 41 82 E4 05 DC E1 0A F3 8F 97 CC 6A
+  0x10: 26 DC 45 19 14 00 02 DD 96
+         -- page 3 (byte1=0x53) --
+  0x00: 22 53 21 F3 2B 0B D6 5A 2E E0 D3 91 A6 0A 18 DC
+  0x10: E2 8B 17 B4 9E 47 86 D1 E1
+         -- page 4 (byte1=0x54) --
+  0x00: 22 54 81 29 0C 00 00 00 00 00 00 00 00 00 00 00
+  0x10: 00 00 00 00 00 00 00 00 00
+=================================================
+[Manifest] link_hash updated (BE:HDA,UA): 35F8F842CFAC1EFA
+
+=================================================
+  TX cnt=0xF2 (242) | Cycle B — Link / BE chain
+  drone 0  MAC=02:44:52:49:50:00
+  drone DET = 2001:0030:3FF8:0405:D952:5618:FBC9:C3CF
+=================================================
+
+[VSIE] elem_id=0xDD  body_len=233  total=235 bytes
+       OUI=FA-0B-BC  vendor_type=0x0D  counter=0xF2
+  0x00: DD E9 FA 0B BC 0D F2 F2 19 09 02 45 01 20 01 00
+  0x10: 30 3F F8 04 05 D9 52 56 18 FB C9 C3 CF 00 00 00
+  0x20: 00 00 00 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4
+  0x30: FF FF 77 08 77 08 00 00 FC 76 00 00 22 50 06 89
+  0x40: 2E BF A6 0E 01 2E BF A6 0E AE 10 A8 0E 20 01 00
+  0x50: 30 3F F8 04 05 22 51 D9 52 56 18 FB C9 C3 CF F5
+  0x60: 05 70 4E B5 44 F8 61 19 0F 2D 8E DA C9 BA 22 52
+  0x70: 83 F3 20 D5 E3 87 26 B3 F5 1C 22 08 51 32 0E C7
+  0x80: E6 20 01 00 30 3F F8 22 53 04 05 D1 62 23 3E 9B
+  0x90: 7E FE EE F8 7A 0D 84 D3 04 99 F7 AA 47 16 4E 97
+  0xA0: 22 54 8B 56 8C EE 96 72 3E C3 AF E5 B3 21 B0 E6
+  0xB0: 50 C8 D8 22 01 34 3C 1B 0B 22 55 85 42 89 22 64
+  0xC0: 47 CB AD E1 7A 70 04 B9 4C E8 D2 A4 D1 BF 39 E7
+  0xD0: 3C B3 22 56 46 44 4A 28 06 00 00 00 00 00 00 00
+  0xE0: 00 00 00 00 00 00 00 00 00 00 00
+
+[Pack] 9 messages, 228 bytes
+       hdr=[F2 19 09]  msg_size=25  count=9
+  0x00: F2 19 09 02 45 01 20 01 00 30 3F F8 04 05 D9 52
+  0x10: 56 18 FB C9 C3 CF 00 00 00 00 00 00 12 20 00 00
+  0x20: 00 02 F4 DF F1 2C 45 2A E4 FF FF 77 08 77 08 00
+  0x30: 00 FC 76 00 00 22 50 06 89 2E BF A6 0E 01 2E BF
+  0x40: A6 0E AE 10 A8 0E 20 01 00 30 3F F8 04 05 22 51
+  0x50: D9 52 56 18 FB C9 C3 CF F5 05 70 4E B5 44 F8 61
+  0x60: 19 0F 2D 8E DA C9 BA 22 52 83 F3 20 D5 E3 87 26
+  0x70: B3 F5 1C 22 08 51 32 0E C7 E6 20 01 00 30 3F F8
+  0x80: 22 53 04 05 D1 62 23 3E 9B 7E FE EE F8 7A 0D 84
+  0x90: D3 04 99 F7 AA 47 16 4E 97 22 54 8B 56 8C EE 96
+  0xA0: 72 3E C3 AF E5 B3 21 B0 E6 50 C8 D8 22 01 34 3C
+  0xB0: 1B 0B 22 55 85 42 89 22 64 47 CB AD E1 7A 70 04
+  0xC0: B9 4C E8 D2 A4 D1 BF 39 E7 3C B3 22 56 46 44 4A
+  0xD0: 28 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0xE0: 00 00 00 00
+
+[Msg 00] Basic ID  (type=0x0  ver=0x2)
+  0x00: 02 45 01 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 00 00 00 00 00 00
+
+[Msg 01] Location  (type=0x1  ver=0x2)
+  0x00: 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4 FF FF 77
+  0x10: 08 77 08 00 00 FC 76 00 00
+
+[Msg 02] Auth Page 0  (AuthType=0x5 SAM, LastPageIdx=6, 7 page(s))
+         Length=137  Timestamp=245808942
+         SAM_type=0x01  →  Link (Broadcast Endorsement)   (SAM data length=137)
+         VNB=245808942  VNA=245895342
+         DET(child) : 200100303FF80405D9525618FBC9C3CF
+         HI (child) : F505704EB544F861190F2D8EDAC9BA83F320D5E38726B3F51C220851320EC7E6
+         DET(parent): 200100303FF80405D162233E9B7EFEEE
+         Sig(parent): F87A0D84D30499F7AA47164E978B568C...(64B)
+         -- page 0 (byte1=0x50) --
+  0x00: 22 50 06 89 2E BF A6 0E 01 2E BF A6 0E AE 10 A8
+  0x10: 0E 20 01 00 30 3F F8 04 05
+         -- page 1 (byte1=0x51) --
+  0x00: 22 51 D9 52 56 18 FB C9 C3 CF F5 05 70 4E B5 44
+  0x10: F8 61 19 0F 2D 8E DA C9 BA
+         -- page 2 (byte1=0x52) --
+  0x00: 22 52 83 F3 20 D5 E3 87 26 B3 F5 1C 22 08 51 32
+  0x10: 0E C7 E6 20 01 00 30 3F F8
+         -- page 3 (byte1=0x53) --
+  0x00: 22 53 04 05 D1 62 23 3E 9B 7E FE EE F8 7A 0D 84
+  0x10: D3 04 99 F7 AA 47 16 4E 97
+         -- page 4 (byte1=0x54) --
+  0x00: 22 54 8B 56 8C EE 96 72 3E C3 AF E5 B3 21 B0 E6
+  0x10: 50 C8 D8 22 01 34 3C 1B 0B
+         -- page 5 (byte1=0x55) --
+  0x00: 22 55 85 42 89 22 64 47 CB AD E1 7A 70 04 B9 4C
+  0x10: E8 D2 A4 D1 BF 39 E7 3C B3
+         -- page 6 (byte1=0x56) --
+  0x00: 22 56 46 44 4A 28 06 00 00 00 00 00 00 00 00 00
+  0x10: 00 00 00 00 00 00 00 00 00
+=================================================
+[Manifest] Built OK — 6 pages, VNB=245811047 VNA=245811167 sign=OK
+[Manifest] curr_hash: BF203B4999885179
+
+=================================================
+  TX cnt=0xF3 (243) | Cycle C — Manifest
+  drone 0  MAC=02:44:52:49:50:00
+  drone DET = 2001:0030:3FF8:0405:D952:5618:FBC9:C3CF
+=================================================
+
+[VSIE] elem_id=0xDD  body_len=233  total=235 bytes
+       OUI=FA-0B-BC  vendor_type=0x0D  counter=0xF3
+  0x00: DD E9 FA 0B BC 0D F3 F2 19 09 02 45 01 20 01 00
+  0x10: 30 3F F8 04 05 D9 52 56 18 FB C9 C3 CF 00 00 00
+  0x20: 00 00 00 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4
+  0x30: FF FF 77 08 77 08 00 00 06 77 00 00 42 40 02 F4
+  0x40: DF F1 2C 45 2A E4 01 00 00 67 09 D0 07 00 77 08
+  0x50: 67 C7 A6 0E 00 22 50 05 79 67 C7 A6 0E 03 67 C7
+  0x60: A6 0E DF C7 A6 0E E6 80 21 DE D7 9D B8 32 22 51
+  0x70: BF 20 3B 49 99 88 51 79 35 F8 F8 42 CF AC 1E FA
+  0x80: AE 59 9B DA 23 E0 94 22 52 EC 20 01 00 30 3F F8
+  0x90: 04 05 D9 52 56 18 FB C9 C3 CF 77 68 54 DC 8C 10
+  0xA0: 22 53 5C 09 C6 C7 77 48 51 B0 90 4D C2 EA 86 50
+  0xB0: F6 7F 37 25 E5 69 B5 EA 24 22 54 02 16 FB BC 98
+  0xC0: 8F 38 14 D5 03 B0 D0 29 72 6B 76 7A 32 50 EF 6C
+  0xD0: 9F 96 22 55 F4 03 56 14 FD 3C 7D 83 D3 EE 26 04
+  0xE0: 00 00 00 00 00 00 00 00 00 00 00
+
+[Pack] 9 messages, 228 bytes
+       hdr=[F2 19 09]  msg_size=25  count=9
+  0x00: F2 19 09 02 45 01 20 01 00 30 3F F8 04 05 D9 52
+  0x10: 56 18 FB C9 C3 CF 00 00 00 00 00 00 12 20 00 00
+  0x20: 00 02 F4 DF F1 2C 45 2A E4 FF FF 77 08 77 08 00
+  0x30: 00 06 77 00 00 42 40 02 F4 DF F1 2C 45 2A E4 01
+  0x40: 00 00 67 09 D0 07 00 77 08 67 C7 A6 0E 00 22 50
+  0x50: 05 79 67 C7 A6 0E 03 67 C7 A6 0E DF C7 A6 0E E6
+  0x60: 80 21 DE D7 9D B8 32 22 51 BF 20 3B 49 99 88 51
+  0x70: 79 35 F8 F8 42 CF AC 1E FA AE 59 9B DA 23 E0 94
+  0x80: 22 52 EC 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x90: C9 C3 CF 77 68 54 DC 8C 10 22 53 5C 09 C6 C7 77
+  0xA0: 48 51 B0 90 4D C2 EA 86 50 F6 7F 37 25 E5 69 B5
+  0xB0: EA 24 22 54 02 16 FB BC 98 8F 38 14 D5 03 B0 D0
+  0xC0: 29 72 6B 76 7A 32 50 EF 6C 9F 96 22 55 F4 03 56
+  0xD0: 14 FD 3C 7D 83 D3 EE 26 04 00 00 00 00 00 00 00
+  0xE0: 00 00 00 00
+
+[Msg 00] Basic ID  (type=0x0  ver=0x2)
+  0x00: 02 45 01 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 00 00 00 00 00 00
+
+[Msg 01] Location  (type=0x1  ver=0x2)
+  0x00: 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4 FF FF 77
+  0x10: 08 77 08 00 00 06 77 00 00
+
+[Msg 02] System  (type=0x4  ver=0x2)
+  0x00: 42 40 02 F4 DF F1 2C 45 2A E4 01 00 00 67 09 D0
+  0x10: 07 00 77 08 67 C7 A6 0E 00
+
+[Msg 03] Auth Page 0  (AuthType=0x5 SAM, LastPageIdx=5, 6 page(s))
+         Length=121  Timestamp=245811047
+         SAM_type=0x03  →  Manifest   (SAM data length=121)
+         VNB=245811047  VNA=245811167
+         Hash(Previous): E68021DED79DB832
+         Hash(Current) : BF203B4999885179
+         Hash(Link)    : 35F8F842CFAC1EFA
+         Hash(Pack)    : AE599BDA23E094EC
+         UA DET        : 200100303FF80405D9525618FBC9C3CF
+         Sig (UA)      : 776854DC8C105C09C6C7774851B0904D...(64B)
+         -- page 0 (byte1=0x50) --
+  0x00: 22 50 05 79 67 C7 A6 0E 03 67 C7 A6 0E DF C7 A6
+  0x10: 0E E6 80 21 DE D7 9D B8 32
+         -- page 1 (byte1=0x51) --
+  0x00: 22 51 BF 20 3B 49 99 88 51 79 35 F8 F8 42 CF AC
+  0x10: 1E FA AE 59 9B DA 23 E0 94
+         -- page 2 (byte1=0x52) --
+  0x00: 22 52 EC 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 77 68 54 DC 8C 10
+         -- page 3 (byte1=0x53) --
+  0x00: 22 53 5C 09 C6 C7 77 48 51 B0 90 4D C2 EA 86 50
+  0x10: F6 7F 37 25 E5 69 B5 EA 24
+         -- page 4 (byte1=0x54) --
+  0x00: 22 54 02 16 FB BC 98 8F 38 14 D5 03 B0 D0 29 72
+  0x10: 6B 76 7A 32 50 EF 6C 9F 96
+         -- page 5 (byte1=0x55) --
+  0x00: 22 55 F4 03 56 14 FD 3C 7D 83 D3 EE 26 04 00 00
+  0x10: 00 00 00 00 00 00 00 00 00
+=================================================
+[Wrapper] Extended OK — 3 msg(s) signed, 5 pages, VNB=245811048 VNA=245811168 sign=OK
+[Manifest] pack_hash updated: AB048A397037415F
+
+=================================================
+  TX cnt=0xF4 (244) | Cycle A — Wrapper
+  drone 0  MAC=02:44:52:49:50:00
+  drone DET = 2001:0030:3FF8:0405:D952:5618:FBC9:C3CF
+=================================================
+
+[VSIE] elem_id=0xDD  body_len=208  total=210 bytes
+       OUI=FA-0B-BC  vendor_type=0x0D  counter=0xF4
+  0x00: DD D0 FA 0B BC 0D F4 F2 19 08 02 45 01 20 01 00
+  0x10: 30 3F F8 04 05 D9 52 56 18 FB C9 C3 CF 00 00 00
+  0x20: 00 00 00 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4
+  0x30: FF FF 77 08 77 08 00 00 10 77 00 00 42 40 02 F4
+  0x40: DF F1 2C 45 2A E4 01 00 00 67 09 D0 07 00 77 08
+  0x50: 68 C7 A6 0E 00 22 50 04 59 68 C7 A6 0E 02 68 C7
+  0x60: A6 0E E0 C7 A6 0E 20 01 00 30 3F F8 04 05 22 51
+  0x70: D9 52 56 18 FB C9 C3 CF C9 E9 BB 79 6B 37 B2 FF
+  0x80: 85 97 07 44 F9 DC 1B 22 52 63 CA 33 2F A9 AC D8
+  0x90: 11 22 30 87 8F EB A3 81 66 2E 72 8A D9 8A 30 D9
+  0xA0: 22 53 A9 21 EC CF EE C4 89 4B 93 94 21 21 23 2A
+  0xB0: 7E A2 46 73 F6 9B E8 73 13 22 54 9E AF 05 00 00
+  0xC0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0xD0: 00 00
+
+[Pack] 8 messages, 203 bytes
+       hdr=[F2 19 08]  msg_size=25  count=8
+  0x00: F2 19 08 02 45 01 20 01 00 30 3F F8 04 05 D9 52
+  0x10: 56 18 FB C9 C3 CF 00 00 00 00 00 00 12 20 00 00
+  0x20: 00 02 F4 DF F1 2C 45 2A E4 FF FF 77 08 77 08 00
+  0x30: 00 10 77 00 00 42 40 02 F4 DF F1 2C 45 2A E4 01
+  0x40: 00 00 67 09 D0 07 00 77 08 68 C7 A6 0E 00 22 50
+  0x50: 04 59 68 C7 A6 0E 02 68 C7 A6 0E E0 C7 A6 0E 20
+  0x60: 01 00 30 3F F8 04 05 22 51 D9 52 56 18 FB C9 C3
+  0x70: CF C9 E9 BB 79 6B 37 B2 FF 85 97 07 44 F9 DC 1B
+  0x80: 22 52 63 CA 33 2F A9 AC D8 11 22 30 87 8F EB A3
+  0x90: 81 66 2E 72 8A D9 8A 30 D9 22 53 A9 21 EC CF EE
+  0xA0: C4 89 4B 93 94 21 21 23 2A 7E A2 46 73 F6 9B E8
+  0xB0: 73 13 22 54 9E AF 05 00 00 00 00 00 00 00 00 00
+  0xC0: 00 00 00 00 00 00 00 00 00 00 00
+
+[Msg 00] Basic ID  (type=0x0  ver=0x2)
+  0x00: 02 45 01 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 00 00 00 00 00 00
+
+[Msg 01] Location  (type=0x1  ver=0x2)
+  0x00: 12 20 00 00 00 02 F4 DF F1 2C 45 2A E4 FF FF 77
+  0x10: 08 77 08 00 00 10 77 00 00
+
+[Msg 02] System  (type=0x4  ver=0x2)
+  0x00: 42 40 02 F4 DF F1 2C 45 2A E4 01 00 00 67 09 D0
+  0x10: 07 00 77 08 68 C7 A6 0E 00
+
+[Msg 03] Auth Page 0  (AuthType=0x5 SAM, LastPageIdx=4, 5 page(s))
+         Length=89  Timestamp=245811048
+         SAM_type=0x02  →  Wrapper   (SAM data length=89)
+         VNB=245811048  VNA=245811168
+         Evidence: (cleared - Extended Transport, signed over the co-located pack messages)
+         UA DET     : 200100303FF80405D9525618FBC9C3CF
+         Sig (UA)   : C9E9BB796B37B2FF85970744F9DC1B63...(64B)
+         -- page 0 (byte1=0x50) --
+  0x00: 22 50 04 59 68 C7 A6 0E 02 68 C7 A6 0E E0 C7 A6
+  0x10: 0E 20 01 00 30 3F F8 04 05
+         -- page 1 (byte1=0x51) --
+  0x00: 22 51 D9 52 56 18 FB C9 C3 CF C9 E9 BB 79 6B 37
+  0x10: B2 FF 85 97 07 44 F9 DC 1B
+         -- page 2 (byte1=0x52) --
+  0x00: 22 52 63 CA 33 2F A9 AC D8 11 22 30 87 8F EB A3
+  0x10: 81 66 2E 72 8A D9 8A 30 D9
+         -- page 3 (byte1=0x53) --
+  0x00: 22 53 A9 21 EC CF EE C4 89 4B 93 94 21 21 23 2A
+  0x10: 7E A2 46 73 F6 9B E8 73 13
+         -- page 4 (byte1=0x54) --
+  0x00: 22 54 9E AF 05 00 00 00 00 00 00 00 00 00 00 00
+  0x10: 00 00 00 00 00 00 00 00 00
+=================================================
+[Manifest] link_hash updated (BE:HDA,UA): 35F8F842CFAC1EFA
+
+=================================================
+  TX cnt=0xF5 (245) | Cycle B — Link / BE chain
+  drone 0  MAC=02:44:52:49:50:00
+  drone DET = 2001:0030:3FF8:0405:D952:5618:FBC9:C3CF
+=================================================
+
+[VSIE] elem_id=0xDD  body_len=233  total=235 bytes
+       OUI=FA-0B-BC  vendor_type=0x0D  counter=0xF5
+  0x00: DD E9 FA 0B BC 0D F5 F2 19 09 02 45 01 20 01 00
+  0x10: 30 3F F8 04 05 D9 52 56 18 FB C9 C3 CF 00 00 00
+  0x20: 00 00 00 12 23 29 53 FD 7F DA DF F1 54 2C 2A E4
+  0x30: FF FF 76 08 76 08 00 00 1A 77 00 00 22 50 06 89
+  0x40: 2E BF A6 0E 01 2E BF A6 0E AE 10 A8 0E 20 01 00
+  0x50: 30 3F F8 04 05 22 51 D1 62 23 3E 9B 7E FE EE 13
+  0x60: D9 90 8A 70 92 59 92 ED 54 60 07 D2 7F 50 22 52
+  0x70: DA 68 BA 72 17 EF 62 AC 3C CA 78 45 29 FF 10 47
+  0x80: 1C 20 01 00 30 3F C0 22 53 00 05 90 24 E8 2A 8F
+  0x90: D0 AF B8 D0 73 07 45 78 CF 1D 1F 05 BA 1C 53 E6
+  0xA0: 22 54 0A E3 BC 9F D1 0C 9A B6 8A 80 73 E7 7D 79
+  0xB0: 61 84 15 9F 70 BA EA 5F 16 22 55 DF E2 02 8F A2
+  0xC0: 34 B7 91 E2 80 50 5F E2 2A B3 A4 51 59 E3 7D 2B
+  0xD0: 44 40 22 56 11 22 6C 03 0D 00 00 00 00 00 00 00
+  0xE0: 00 00 00 00 00 00 00 00 00 00 00
+
+[Pack] 9 messages, 228 bytes
+       hdr=[F2 19 09]  msg_size=25  count=9
+  0x00: F2 19 09 02 45 01 20 01 00 30 3F F8 04 05 D9 52
+  0x10: 56 18 FB C9 C3 CF 00 00 00 00 00 00 12 23 29 53
+  0x20: FD 7F DA DF F1 54 2C 2A E4 FF FF 76 08 76 08 00
+  0x30: 00 1A 77 00 00 22 50 06 89 2E BF A6 0E 01 2E BF
+  0x40: A6 0E AE 10 A8 0E 20 01 00 30 3F F8 04 05 22 51
+  0x50: D1 62 23 3E 9B 7E FE EE 13 D9 90 8A 70 92 59 92
+  0x60: ED 54 60 07 D2 7F 50 22 52 DA 68 BA 72 17 EF 62
+  0x70: AC 3C CA 78 45 29 FF 10 47 1C 20 01 00 30 3F C0
+  0x80: 22 53 00 05 90 24 E8 2A 8F D0 AF B8 D0 73 07 45
+  0x90: 78 CF 1D 1F 05 BA 1C 53 E6 22 54 0A E3 BC 9F D1
+  0xA0: 0C 9A B6 8A 80 73 E7 7D 79 61 84 15 9F 70 BA EA
+  0xB0: 5F 16 22 55 DF E2 02 8F A2 34 B7 91 E2 80 50 5F
+  0xC0: E2 2A B3 A4 51 59 E3 7D 2B 44 40 22 56 11 22 6C
+  0xD0: 03 0D 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0xE0: 00 00 00 00
+
+[Msg 00] Basic ID  (type=0x0  ver=0x2)
+  0x00: 02 45 01 20 01 00 30 3F F8 04 05 D9 52 56 18 FB
+  0x10: C9 C3 CF 00 00 00 00 00 00
+
+[Msg 01] Location  (type=0x1  ver=0x2)
+  0x00: 12 23 29 53 FD 7F DA DF F1 54 2C 2A E4 FF FF 76
+  0x10: 08 76 08 00 00 1A 77 00 00
+
+[Msg 02] Auth Page 0  (AuthType=0x5 SAM, LastPageIdx=6, 7 page(s))
+         Length=137  Timestamp=245808942
+         SAM_type=0x01  →  Link (Broadcast Endorsement)   (SAM data length=137)
+         VNB=245808942  VNA=245895342
+         DET(child) : 200100303FF80405D162233E9B7EFEEE
+         HI (child) : 13D9908A70925992ED546007D27F50DA68BA7217EF62AC3CCA784529FF10471C
+         DET(parent): 200100303FC000059024E82A8FD0AFB8
+         Sig(parent): D073074578CF1D1F05BA1C53E60AE3BC...(64B)
+         -- page 0 (byte1=0x50) --
+  0x00: 22 50 06 89 2E BF A6 0E 01 2E BF A6 0E AE 10 A8
+  0x10: 0E 20 01 00 30 3F F8 04 05
+         -- page 1 (byte1=0x51) --
+  0x00: 22 51 D1 62 23 3E 9B 7E FE EE 13 D9 90 8A 70 92
+  0x10: 59 92 ED 54 60 07 D2 7F 50
+         -- page 2 (byte1=0x52) --
+  0x00: 22 52 DA 68 BA 72 17 EF 62 AC 3C CA 78 45 29 FF
+  0x10: 10 47 1C 20 01 00 30 3F C0
+         -- page 3 (byte1=0x53) --
+  0x00: 22 53 00 05 90 24 E8 2A 8F D0 AF B8 D0 73 07 45
+  0x10: 78 CF 1D 1F 05 BA 1C 53 E6
+         -- page 4 (byte1=0x54) --
+  0x00: 22 54 0A E3 BC 9F D1 0C 9A B6 8A 80 73 E7 7D 79
+  0x10: 61 84 15 9F 70 BA EA 5F 16
+         -- page 5 (byte1=0x55) --
+  0x00: 22 55 DF E2 02 8F A2 34 B7 91 E2 80 50 5F E2 2A
+  0x10: B3 A4 51 59 E3 7D 2B 44 40
+         -- page 6 (byte1=0x56) --
+  0x00: 22 56 11 22 6C 03 0D 00 00 00 00 00 00 00 00 00
+  0x10: 00 00 00 00 00 00 00 00 00
+=================================================
+[Fleet] pack dump off

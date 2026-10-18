@@ -40,8 +40,23 @@ Fixed by:
   2. NOT echoing every line to the console (--echo restores it)
   3. flushing about once a second instead of once a line
   4. asking Windows for a 1 MB RX buffer instead of 4 kB
+
+-----------------------------------------------------------------------------
+ HOST-TIME MARKER
+-----------------------------------------------------------------------------
+A sniffer frame carries only the sniffer clock (microseconds since the sniffer
+booted). When the logger reads the FIRST frame it writes one line before it:
+
+    # host-time unix=<host Unix time when that line was read> sniffer_us=<its t_us>
+
+The Observer uses that pair to give every frame of the capture a Unix receive
+time, at which it checks the VNB..VNA validity windows (RFC 9575 3.2.4.3).
+The first frame is a Format A row at offset 000000 with its time prefix, or a
+Format BT '#B' line (t_us, or t_ms when t_us is absent). The marker goes
+before that line, so a '#B' line stays directly above its hex line.
 """
 
+import re
 import serial
 import time
 import sys
@@ -54,6 +69,23 @@ OUTPUT_FILE = "data_log.txt"
 # ----------------------------------------------------------
 
 STATUS_EVERY_S = 1.0
+
+# First-frame detectors, the same shapes odid.py parses.
+_A_FIRST_ROW = re.compile(r'^\s*(\d{2}):(\d{2}):(\d{2})\.(\d{1,9})\s+000000\s')
+_BT_META = re.compile(r'^#B\s.*?\bt_ms=(\d+)\b(?:.*?\bt_us=(\d+))?')
+
+
+def first_frame_sniffer_us(line):
+    """Sniffer time (us) of a line that opens a frame, or None."""
+    m = _A_FIRST_ROW.match(line)
+    if m:
+        frac = (m.group(4) + "000000")[:6]
+        return ((int(m.group(1)) * 3600 + int(m.group(2)) * 60 +
+                 int(m.group(3))) * 1_000_000 + int(frac))
+    m = _BT_META.match(line.strip())
+    if m:
+        return int(m.group(2)) if m.group(2) else int(m.group(1)) * 1000
+    return None
 
 
 def main():
@@ -128,6 +160,7 @@ def main():
 
     buf = bytearray()
     n_lines = n_bytes = 0
+    host_time_written = False
     t_start = t_status = time.time()
     last_bytes = 0
 
@@ -141,6 +174,7 @@ def main():
                     # the stream is idle (and honours ser.timeout).
                     waiting = ser.in_waiting
                     chunk = ser.read(waiting) if waiting else ser.read(1)
+                    t_read = time.time()
                 except serial.SerialException as e:
                     print(f"\n[ERROR] Serial connection lost: {e}")
                     break
@@ -158,6 +192,12 @@ def main():
                         raw = bytes(buf[:nl])
                         del buf[:nl + 1]
                         line = raw.decode("utf-8", errors="replace").rstrip("\r")
+                        if line and not host_time_written:
+                            t_us = first_frame_sniffer_us(line)
+                            if t_us is not None:
+                                f.write(f"# host-time unix={t_read:.6f} "
+                                        f"sniffer_us={t_us}\n")
+                                host_time_written = True
                         if line:
                             f.write(line + "\n")
                             n_lines += 1

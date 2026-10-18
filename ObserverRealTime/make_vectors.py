@@ -288,13 +288,14 @@ def self_test():
         detail = "no findings" if not findings else ", ".join(sorted(ids))
         print(f"  [{status}] {label:42s} expect={expect or '(clean)':10s} got: {detail}")
     print(f"\nself-test: {passed} passed, {failed} failed")
-    chain_ok = man_ok = trust_ok = legacy_ok = True
+    chain_ok = man_ok = trust_ok = legacy_ok = window_ok = True
     if HAVE_ED:
         chain_ok = chain_self_test()
         man_ok = manifest_self_test()
         trust_ok = trust_self_test()
         legacy_ok = legacy_self_test()          # session 3: Bluetooth Legacy / FEC
-    return failed == 0 and chain_ok and man_ok and trust_ok and legacy_ok
+        window_ok = window_self_test()          # validity windows (RFC 9575 3.2.4.3)
+    return failed == 0 and chain_ok and man_ok and trust_ok and legacy_ok and window_ok
 
 
 def main(argv=None):
@@ -399,9 +400,11 @@ if HAVE_ED:
         # `now` is a UNIX timestamp, so the DRIP-epoch VNA is converted before
         # use. Passing the raw DRIP value put the reference time in 1971, which
         # is before every VNB, so the check fired for the opposite reason to the
-        # one the label claims.
+        # one the label claims. The reference time lies beyond the clock
+        # tolerance (observer.CLOCK_TOLERANCE_S), which widens every window.
         check("E-LINK-04 expired window", [c['apex_raa'], c['raa_hda'], c['hda_ua']],
-              "E-LINK-04", now=odid.EPOCH_2019 + c['hda_ua']['vna'] + 10)
+              "E-LINK-04",
+              now=odid.EPOCH_2019 + c['hda_ua']['vna'] + observer.CLOCK_TOLERANCE_S + 10)
 
         print(f"  chain self-test: {passed} passed, {failed} failed")
         return failed == 0
@@ -921,6 +924,181 @@ if HAVE_ED:
               a_capture(base + [(10.0, mans[0]), (13.0, mans[1]), (16.0, mans[2])]), set())
 
         print(f"  legacy self-test: {passed} passed, {failed} failed")
+        return failed == 0
+
+
+# ===========================================================================
+#  Validity-window vectors (RFC 9575 3.2.4.3): E-WIND-01, E-LINK-04 per
+#  receipt, the '# host-time' marker, and frames refused without a receive
+#  time. Every case is judged at an explicit receive time; t(x) is the Unix
+#  time x seconds after the VNB used by the evidence.
+# ===========================================================================
+if HAVE_ED:
+
+    def window_self_test():
+        print("\n--- Validity window self-test (E-WIND-01 / E-LINK-04) ---")
+        passed = failed = 0
+        tol = observer.CLOCK_TOLERANCE_S
+        vnb = 201699200; vna = vnb + 120
+
+        def t(x):
+            return odid.EPOCH_2019 + vnb + x
+
+        def check(label, text, expect_ids, time_ref, health=None, keys=None,
+                  pub=UA_PUB, wrap=None):
+            """expect_ids: EXACT set of error ids. health: {key: value} that
+               observer.capture_health must hold. wrap: number of verified
+               Wrapper signatures the identity table must count for UA_DET."""
+            nonlocal passed, failed
+            if keys is not None:
+                pub = None
+            _f, report, findings = observer.run(text, keys=keys, pub=pub,
+                                                time_ref=time_ref)
+            ids = {f.error_id for f in findings}
+            ok = (ids == set(expect_ids))
+            notes = []
+            for k, v in (health or {}).items():
+                got = observer.capture_health.get("bt", {}).get(k, observer.capture_health.get(k))
+                if got != v:
+                    notes.append(f"{k}={got} (want {v})")
+            if wrap is not None:
+                got = len(observer.collect_identities(report).get(bytes(UA_DET), {}).get("wrap", ()))
+                if got != wrap:
+                    notes.append(f"wrap={got} (want {wrap})")
+            ok = ok and not notes
+            print(f"  [{'PASS' if ok else 'FAIL'}] {label:52s} "
+                  f"expect={','.join(sorted(expect_ids)) or '(clean)':10s} "
+                  f"got: {', '.join(sorted(ids)) or 'no findings'}"
+                  + (f"  CHECK {'; '.join(notes)}" if notes else ""))
+            passed += ok; failed += (not ok)
+
+        def fixed(x):
+            return observer.TimeReference(fixed=t(x))
+
+        def hexrec(p):
+            return ' '.join(f'{x:02X}' for x in p)
+
+        # ---- Wrapper (Format B, fixed receive time) ------------------------
+        wpk = _wrapper_pack(UA_DET, UA_PRIV_SEED, vnb, vna)
+        check("T1 Wrapper received inside VNB..VNA", hexrec(wpk), set(), fixed(60), wrap=1)
+        check("T2 Wrapper received before VNB (beyond tolerance)", hexrec(wpk),
+              {"E-WIND-01"}, fixed(-tol - 5), wrap=0)
+        check("T3 Wrapper received after VNA (beyond tolerance)", hexrec(wpk),
+              {"E-WIND-01"}, fixed(120 + tol + 5), wrap=0)
+        check("T4 Wrapper before VNB, within tolerance", hexrec(wpk), set(),
+              fixed(-tol + 1), wrap=1)
+        check("T5 Wrapper after VNA, within tolerance", hexrec(wpk), set(),
+              fixed(120 + tol - 1), wrap=1)
+
+        # An expired Wrapper is discarded, not verified: one signed by another
+        # key raises E-SIG-01 inside the window and only E-WIND-01 outside it.
+        other_seed = bytes([0x5A]) * 32
+        astm = [basic_id(), system_msg(), _location_msg()]
+        bad_pages, _ = build_extended_wrapper_pages(astm, UA_DET, vnb, vna, other_seed)
+        bad_wpk = pack([basic_id(), _location_msg(), system_msg()] + bad_pages)
+        check("T6 bad Wrapper signature inside the window", hexrec(bad_wpk),
+              {"E-SIG-01"}, fixed(60))
+        check("T7 bad Wrapper signature after VNA: discarded", hexrec(bad_wpk),
+              {"E-WIND-01"}, fixed(120 + tol + 5))
+
+        # ---- Manifest ------------------------------------------------------
+        c = build_chain(vnb)
+        chain_packs = [_be_pack(c[k]) for k in ("apex_raa", "raa_hda", "hda_ua")]
+        link_hash = det.cshake128(_be_full_sam(c['hda_ua']), 8, N=b'', S=b"Remote ID Auth Hash")
+        pack_hash = det.cshake128(wpk, 8, N=b'', S=b"Remote ID Auth Hash")
+        old_vnb = vnb - 1000
+        pl_old, _ = _manifest_payload(bytes(8), link_hash, [pack_hash], old_vnb,
+                                      old_vnb + 120, break_sig=True)
+        text = "\n".join(hexrec(p) for p in [wpk] + chain_packs + [_manifest_pack(pl_old, old_vnb)])
+        check("T8 expired Manifest (bad signature): discarded", text,
+              {"E-WIND-01"}, fixed(60))
+        pl_ok, _ = _manifest_payload(bytes(8), link_hash, [pack_hash], vnb, vna)
+        text = "\n".join(hexrec(p) for p in [wpk] + chain_packs + [_manifest_pack(pl_ok, vnb)])
+        check("T9 Manifest inside the window, references present", text, set(), fixed(60))
+
+        # ---- Format A captures: the host-time marker -----------------------
+        def a_capture(timed_packs, marker=None):
+            head = "# DRIP-SNIFFER v1\n"
+            if marker is not None:
+                head += f"# host-time unix={marker[0]:.6f} sniffer_us={marker[1]}\n"
+            return head + "\n".join(_beacon_rows(p, t_s=s) for s, p in timed_packs)
+
+        def from_marker(text):
+            unix, us = odid.find_host_time(text)
+            return observer.TimeReference(host_unix=unix, sniffer_us=us)
+
+        timed = [(1.0 + i, p) for i, p in enumerate(chain_packs)] + [(5.0, wpk)]
+        # first frame at sniffer 1 s is received at t(56): the Wrapper at t(60)
+        cap = a_capture(timed, marker=(t(56), 1_000_000))
+        check("T10 marker: Wrapper received at t(VNB+60)", cap, set(), from_marker(cap), wrap=1)
+        cap = a_capture(timed, marker=(t(56 + 120 + tol), 1_000_000))
+        check("T11 marker shifted past VNA: Wrapper discarded", cap,
+              {"E-WIND-01"}, from_marker(cap), wrap=0)
+        # the sniffer rebooted after the marker: earlier sniffer times are
+        # refused, the frames after the anchor are judged
+        cap = a_capture(timed, marker=(t(60), 5_000_000))
+        check("T12 frames before the marker (sniffer reboot) refused", cap, set(),
+              from_marker(cap), health={"time_unreferenced": 3}, wrap=1)
+        # --capture-start: the anchor is the first frame of the file
+        cap = a_capture(timed)
+        check("T13 --capture-start anchored at the first frame", cap, set(),
+              observer.TimeReference(host_unix=t(56)), wrap=1)
+
+        # ---- Link endorsements: per receipt --------------------------------
+        # Only the Apex is trusted, so the UA key comes from the chain: an
+        # endorsement outside its window teaches no key (E-KEY-01 follows).
+        kr = _apex_only_keyring()
+        cap = a_capture(timed)
+        check("T14 chain and Wrapper inside their windows", cap, set(),
+              observer.TimeReference(host_unix=t(56)), keys=kr, wrap=1)
+        late = 86400 + tol + 100
+        wpk_late = _wrapper_pack(UA_DET, UA_PRIV_SEED, vnb + late, vnb + late + 120)
+        cap = a_capture([(1.0 + i, p) for i, p in enumerate(chain_packs)] + [(5.0, wpk_late)])
+        # the expired upper Links admit no key, so the Links below them have
+        # no path to the anchor (E-LINK-03) and the UA key stays unknown
+        check("T15 every Link receipt after VNA: no key learned", cap,
+              {"E-LINK-04", "E-LINK-03", "E-KEY-01"},
+              observer.TimeReference(host_unix=t(late - 4)), keys=_apex_only_keyring())
+        # the same chain received once inside and once after its window: the
+        # late receipt is reported, the endorsement stays usable
+        cap = a_capture([(1.0 + i, p) for i, p in enumerate(chain_packs)] + [(5.0, wpk)]
+                        + [(86400.0 + tol + 100 + i, p) for i, p in enumerate(chain_packs)])
+        check("T16 Link received inside and after VNA: still usable", cap,
+              {"E-LINK-04"}, observer.TimeReference(host_unix=t(56)),
+              keys=_apex_only_keyring(), wrap=1)
+
+        # ---- Bluetooth Legacy (Format BT) ----------------------------------
+        bt = build_legacy_capture()
+        check("T17 BT capture inside the windows", bt, set(),
+              observer.TimeReference(host_unix=t(0), sniffer_us=_BT_T0))
+        check("T18 BT capture after every VNA: Manifests discarded", bt,
+              {"E-WIND-01", "E-LINK-04", "E-LINK-03"},
+              observer.TimeReference(host_unix=t(86400 + tol + 100), sniffer_us=_BT_T0))
+
+        # ---- CLI: a capture with no time reference is refused --------------
+        import io, os, tempfile, contextlib
+        fd, path = tempfile.mkstemp(suffix=".txt"); os.close(fd)
+        try:
+            with open(path, "w") as fh:
+                fh.write(a_capture(timed))
+            with contextlib.redirect_stdout(io.StringIO()) as out:
+                rc = observer.main([path])
+            ok = rc == 2 and "no time reference" in out.getvalue()
+            print(f"  [{'PASS' if ok else 'FAIL'}] {'T19 CLI refuses a capture without a time reference':52s} "
+                  f"expect=exit 2    got: exit {rc}  (exit codes: COMMANDS.md section 8)")
+            passed += ok; failed += (not ok)
+            with open(path, "w") as fh:
+                fh.write(a_capture(timed, marker=(t(56), 1_000_000)))
+            with contextlib.redirect_stdout(io.StringIO()) as out:
+                rc = observer.main([path, "--pubkey", UA_PUB.hex()])
+            ok = rc == 0 and "Time reference: '# host-time' marker" in out.getvalue()
+            print(f"  [{'PASS' if ok else 'FAIL'}] {'T20 CLI reads the host-time marker':52s} "
+                  f"expect=exit 0    got: exit {rc}  (exit codes: COMMANDS.md section 8)")
+            passed += ok; failed += (not ok)
+        finally:
+            os.remove(path)
+
+        print(f"  window self-test: {passed} passed, {failed} failed")
         return failed == 0
 
 

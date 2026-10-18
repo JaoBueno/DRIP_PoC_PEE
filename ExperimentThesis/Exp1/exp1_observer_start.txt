@@ -1,0 +1,107 @@
+Trust anchor: hierarchy.json  apex=2001:30:0:5:70f9:e8e9:b564:f448
+Ed25519 backend: cryptography 47.0.0 (OpenSSL)
+  self-test: agrees with ed25519.py on RFC 8032 §7.1 TEST 1 (valid accepted, tampered rejected)
+Time reference: --now 1715853817 (fixed); clock tolerance 10 s
+Input format: B (flat hex)
+DRIP payloads decoded: 21
+Decoded items: 59
+
+Message-type counts:
+      22  Authentication
+      13  Basic ID
+      11  Authentication (reassembled)
+       3  System
+       3  Self-ID
+       2  ?
+       2  Location/Vector
+       1  Operator ID
+       1  Message Pack
+       1  Unknown
+
+Identities observed: 3 drone(s)
+
+  #  DET                                      MAC(s)                packs  key from                               auth
+  1  2001:30:fa07:d005:4dfd:c311:3e5:1953     (n/a)                    11  -                                      NO KEY - not verified
+  2  3001:30:fa07:d005:4dfd:c311:3e5:1953     (n/a)                     1  -                                      NO KEY - not verified
+  3  2001:30:fa07:d005:4cfd:c311:3e5:1953     (n/a)                     1  -                                      NO KEY - not verified
+
+Key provenance: 8 from trust file
+
+Findings by DET:
+  2001:30:fa07:d005:4dfd:c311:3e5:1953  [NO KEY]  1 finding(s)
+        E-KEY-01 x1
+  3001:30:fa07:d005:4dfd:c311:3e5:1953  [NO KEY]  2 finding(s)
+        E-DET-01 x1, E-KEY-01 x1
+  2001:30:fa07:d005:4cfd:c311:3e5:1953  [NO KEY]  1 finding(s)
+        E-KEY-01 x1
+  (unattributed - format/pack level)  26 finding(s)
+        E-AUTH-01 x1, E-AUTH-02 x1, E-AUTH-03 x1, E-AUTH-04 x1, E-AUTH-05 x2, E-AUTH-06 x1, E-FMT-01 x1, E-FMT-02 x1, E-FMT-03 x2, E-PACK-01 x1, E-PACK-02 x1, E-PACK-03 x1, E-PACK-04 x1, E-SAM-01 x1, E-SEM-01 x3, E-SIG-01 x7
+
+Findings:
+  E-AUTH-01  x1  Reserved / invalid Auth Type (6-9)
+          constraint: ASTM F3411-22a Tables 8 / 9
+          - @ record[8] msg[0]  (AuthType=7)
+  E-AUTH-02  x1  Page-0 Data Page Number is not 0
+          constraint: ASTM F3411-22a Table 8
+          - @ record[16] msg[1]  (page=1 with no page 0 before it)
+  E-AUTH-03  x1  Authentication page numbering error (gap / order / > last page)
+          constraint: ASTM F3411-22a 5.4.5.15
+          - @ record[10] auth@msg[0]  (pages=[0] expected=[0, 1, 2])
+  E-AUTH-04  x1  Last Page Index reserved bits [7:4] are non-zero
+          constraint: ASTM F3411-22a Table 8
+          - @ record[9] msg[0]  (reserved nibble=0x1)
+  E-AUTH-05  x2  Auth Length inconsistent with reassembled pages
+          constraint: ASTM F3411-22a 5.4.5.15
+          - @ record[10] auth@msg[0]  (declared length=41)
+          - @ record[17] auth@msg[1]  (declared length=60)
+  E-AUTH-06  x1  Authentication timestamp out of valid range
+          constraint: ASTM F3411-22a Table 8
+          - @ record[18] msg[1]  (ts=2147483648)
+  E-DET-01  x1  DET prefix is not 2001:30::/28
+          constraint: RFC 9374 Table 1
+          - @ record[12]  (3001:30:fa07:d005:4dfd:c311:3e5:1953)
+  E-FMT-01  x1  Unknown / unsupported message type
+          constraint: ASTM F3411-22a Table 3 (valid: 0x0-0x5, 0xF)
+          - @ record[14]  (type=0x6)
+  E-FMT-02  x1  Wrong protocol version (expected 0x2)
+          constraint: ASTM F3411-22a 5.4.5.4 / Table 4
+          - @ record[3]  (version=0x3)
+  E-FMT-03  x2  Bad record length (a single message must be 25 bytes)
+          constraint: ASTM F3411-22a 5.4.5.4
+          - @ record[6] msg[2]  (0 bytes)
+          - @ record[15]  (20 bytes)
+  E-KEY-01  x3  No public key known for this DET - signature/binding NOT checked
+          constraint: observer keyring (RFC 9374 3.5.2 binds a DET to one key)
+          - @ record[0] msg[0]  (2001:30:fa07:d005:4dfd:c311:3e5:1953 - no key after the endorsement walk; covers 13 deferred check(s))
+          - @ record[12]  (3001:30:fa07:d005:4dfd:c311:3e5:1953 - no key after the endorsement walk; covers 1 deferred check(s))
+          - @ record[13]  (2001:30:fa07:d005:4cfd:c311:3e5:1953 - no key after the endorsement walk; covers 1 deferred check(s))
+  E-PACK-01  x1  Message Pack 'Message Size' field is not 0x19 (25)
+          constraint: ASTM F3411-22a Table 13
+          - @ record[4]  (size=0x18)
+  E-PACK-02  x1  Message Pack count N out of range (must be 1..9)
+          constraint: ASTM F3411-22a Table 13
+          - @ record[5]  (N=0)
+  E-PACK-03  x1  Message Pack truncated (declared N*25 exceeds bytes present)
+          constraint: ASTM F3411-22a Table 13
+          - @ record[6]  (need 75, have 50)
+  E-PACK-04  x1  Nested Message Pack (a 0xF message inside a pack)
+          constraint: ASTM F3411-22a 5.4.5.22
+          - @ record[7] msg[0]  (0xF message nested inside a pack)
+  E-SAM-01  x1  Unknown / invalid DRIP SAM Type (expected 0x01-0x04)
+          constraint: RFC 9575 Table 1
+          - @ record[11] auth@msg[0]  (SAM=0x09)
+  E-SEM-01  x3  DRIP authentication present but no DRIP Basic ID (Type 4 / SSI 1) in pack (Bluetooth Legacy: from the same sender address anywhere in the capture)
+          constraint: RFC 9374 / ASTM F3411-22a 5.4.5
+          - @ record[9]
+          - @ record[10]
+          - @ record[19]
+  E-SIG-01  x7  DRIP Wrapper signature verification failed (Ed25519)
+          constraint: RFC 9575 4.3  [extension point - see observer.py]
+          - @ record[0] auth@msg[4]  (wrapper payload too short (8 B))
+          - @ record[2] auth@msg[1]  (wrapper payload too short (39 B))
+          - @ record[9] auth@msg[0]  (wrapper payload too short (4 B))
+          - @ record[10] auth@msg[0]  (wrapper payload too short (16 B))
+          - @ record[17] auth@msg[1]  (wrapper payload too short (39 B))
+          - ... and 2 more
+
+Total findings: 30

@@ -1,0 +1,5 @@
+BasicID Location System Auth Total : packs : composition
+(1, 1, 0, 7, 9) : 475 : B: Basic ID, Location/Vector, seven Link pages
+(1, 1, 1, 5, 8) : 475 : A: Basic ID, Location/Vector, System, five Wrapper pages
+(1, 1, 1, 6, 9) : 474 : C: Basic ID, Location/Vector, System, six Manifest pages
+packs in total: 1424

@@ -85,6 +85,10 @@ ERROR_CATALOG = {
                   "RFC 9575 6.4.2"),
     "E-LINK-04": ("Link Broadcast Endorsement outside its validity window (VNB..VNA)",
                   "RFC 9575 3.2.4.3"),
+    "E-WIND-01": ("UA-signed evidence (DRIP Wrapper / Manifest) outside its "
+                  "VNB..VNA validity window when received (clock tolerance "
+                  "applied); the evidence is discarded",
+                  "RFC 9575 3.2.4.3 / 4.1"),
     # --- DRIP Manifest (RFC 9575 §4.4) --------------------------------------
     "E-MAN-01": ("Manifest signature invalid (Ed25519 over VNB|VNA|Evidence|DET)",
                  "RFC 9575 4.4 / 4.1"),

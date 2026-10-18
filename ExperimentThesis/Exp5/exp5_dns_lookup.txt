@@ -1,0 +1,111 @@
+===== 1. Apex: 2001:30:0:5:70f9:e8e9:b564:f448  (exit 1)
+DNS lookup for DET 200100300000000570F9E8E9B564F448
+  resolver: 141.227.148.117
+  DET   : 2001:30:0:5:70f9:e8e9:b564:f448
+  RESULT: lookup failed — PTR lookup returned no answer for 8.4.4.f.4.6.5.b.9.e.8.e.9.f.0.7.5.0.0.0.0.0.0.0.0.3.0.0.1.0.0.2.ip6.arpa.
+
+===== 2. RAA, chain A: 2001:30:3fc0:5:9024:e82a:8fd0:afb8  (exit 1)
+DNS lookup for DET 200100303FC000059024E82A8FD0AFB8
+  resolver: 141.227.148.117
+  DET   : 2001:30:3fc0:5:9024:e82a:8fd0:afb8
+  RESULT: lookup failed — PTR lookup returned no answer for 8.b.f.a.0.d.f.8.a.2.8.e.4.2.0.9.5.0.0.0.0.c.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+===== 3. HDA, chain A: 2001:30:3ff8:405:d162:233e:9b7e:feee  (exit 1)
+DNS lookup for DET 200100303FF80405D162233E9B7EFEEE
+  resolver: 141.227.148.117
+  DET   : 2001:30:3ff8:405:d162:233e:9b7e:feee
+  RESULT: lookup failed — PTR lookup returned no answer for e.e.e.f.e.7.b.9.e.3.3.2.2.6.1.d.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+===== 4. RAA, chain B: 2001:30:fa00:5:d18f:f62a:f870:d730  (exit 1)
+DNS lookup for DET 20010030FA000005D18FF62AF870D730
+  resolver: 141.227.148.117
+  DET   : 2001:30:fa00:5:d18f:f62a:f870:d730
+  RESULT: lookup failed — PTR lookup returned no answer for 0.3.7.d.0.7.8.f.a.2.6.f.f.8.1.d.5.0.0.0.0.0.a.f.0.3.0.0.1.0.0.2.ip6.arpa.
+
+===== 5. HDA, chain B: 2001:30:fa07:d005:f0d2:b5a:871b:a28  (exit 1)
+DNS lookup for DET 20010030FA07D005F0D20B5A871B0A28
+  resolver: 141.227.148.117
+  DET   : 2001:30:fa07:d005:f0d2:b5a:871b:a28
+  RESULT: lookup failed — PTR lookup returned no answer for 8.2.a.0.b.1.7.8.a.5.b.0.2.d.0.f.5.0.0.d.7.0.a.f.0.3.0.0.1.0.0.2.ip6.arpa.
+
+===== 6. RAA, chain C: 2001:3f:0:5:80a:9f96:d49f:7057  (exit 1)
+DNS lookup for DET 2001003F00000005080A9F96D49F7057
+  resolver: 141.227.148.117
+  DET   : 2001:3f:0:5:80a:9f96:d49f:7057
+  RESULT: lookup failed — PTR lookup returned no answer for 7.5.0.7.f.9.4.d.6.9.f.9.a.0.8.0.5.0.0.0.0.0.0.0.f.3.0.0.1.0.0.2.ip6.arpa.
+
+===== 7. HDA, chain C: 2001:3f:0:6405:f18a:e883:952e:9b04  (exit 1)
+DNS lookup for DET 2001003F00006405F18AE883952E9B04
+  resolver: 141.227.148.117
+  DET   : 2001:3f:0:6405:f18a:e883:952e:9b04
+  RESULT: lookup failed — PTR lookup returned no answer for 4.0.b.9.e.2.5.9.3.8.8.e.a.8.1.f.5.0.4.6.0.0.0.0.f.3.0.0.1.0.0.2.ip6.arpa.
+
+===== 8. UA identity 0: 2001:30:3ff8:405:d952:5618:fbc9:c3cf  (exit 0)
+DNS lookup for DET 200100303FF80405D9525618FBC9C3CF
+  resolver: 141.227.148.117
+  DET   : 2001:30:3ff8:405:d952:5618:fbc9:c3cf
+  FQDN  : snfr2025000123.driplab.example.
+
+  TXT record:
+    mfg        : AeroTech Robotics Ltd
+    sn         : SN-FR-2025-000123
+    model      : ATX-Quad-400
+    reg_status : active
+    pubkey     : 9QVwTrVE+GEZDy2O2sm6g/Mg1eOHJrP1HCIIUTIOx+Y=  (32 bytes)
+
+  DNSSEC : no RRSIG in answer
+  BINDING: VERIFIED — the DNS key derives this DET (RFC 9374 3.5.2)
+
+Write this identity into hierarchy.json's 'ua' array? [y/N] Not written.
+
+===== 9. UA identity 1: 2001:30:3ff8:405:8412:4323:5d3c:a050  (exit 1)
+DNS lookup for DET 200100303FF80405841243235D3CA050
+  resolver: 141.227.148.117
+  DET   : 2001:30:3ff8:405:8412:4323:5d3c:a050
+  RESULT: lookup failed — PTR lookup returned no answer for 0.5.0.a.c.3.d.5.3.2.3.4.2.1.4.8.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+===== 10. UA identity 2: 2001:30:3ff8:405:a57e:87ab:5388:cbb8  (exit 1)
+DNS lookup for DET 200100303FF80405A57E87AB5388CBB8
+  resolver: 141.227.148.117
+  DET   : 2001:30:3ff8:405:a57e:87ab:5388:cbb8
+  RESULT: lookup failed — PTR lookup returned no answer for 8.b.b.c.8.8.3.5.b.a.7.8.e.7.5.a.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+===== 11. UA identity 3 (malformed DET): 2001:30:3ff8:405:b113:9c81:d46a:cb85  (exit 1)
+DNS lookup for DET 200100303FF80405B1139C81D46ACB85
+  resolver: 141.227.148.117
+  DET   : 2001:30:3ff8:405:b113:9c81:d46a:cb85
+  RESULT: lookup failed — PTR lookup returned no answer for 5.8.b.c.a.6.4.d.1.8.c.9.3.1.1.b.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+===== 12. UA identity 4 (chain C): 2001:3f:0:6405:b6ae:eea3:d5b:898c  (exit 1)
+DNS lookup for DET 2001003F00006405B6AEEEA30D5B898C
+  resolver: 141.227.148.117
+  DET   : 2001:3f:0:6405:b6ae:eea3:d5b:898c
+  RESULT: lookup failed — PTR lookup returned no answer for c.8.9.8.b.5.d.0.3.a.e.e.e.a.6.b.5.0.4.6.0.0.0.0.f.3.0.0.1.0.0.2.ip6.arpa.
+
+===== 13. UA identity 5 (bad endorsement): 2001:30:3ff8:405:a5c7:51d1:7b8c:6526  (exit 1)
+DNS lookup for DET 200100303FF80405A5C751D17B8C6526
+  resolver: 141.227.148.117
+  DET   : 2001:30:3ff8:405:a5c7:51d1:7b8c:6526
+  RESULT: lookup failed — PTR lookup returned no answer for 6.2.5.6.c.8.b.7.1.d.1.5.7.c.5.a.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+===== 14. Listed with no key: 2001:30:3ff8:405:5c76:7822:e2ed:15bc  (exit 1)
+DNS lookup for DET 200100303FF804055C767822E2ED15BC
+  resolver: 141.227.148.117
+  DET   : 2001:30:3ff8:405:5c76:7822:e2ed:15bc
+  RESULT: lookup failed — PTR lookup returned no answer for c.b.5.1.d.e.2.e.2.2.8.7.6.7.c.5.5.0.4.0.8.f.f.3.0.3.0.0.1.0.0.2.ip6.arpa.
+
+SUMMARY (registry answer per DET)
+ 1. Apex                             2001:30:0:5:70f9:e8e9:b564:f448          no record
+ 2. RAA, chain A                     2001:30:3fc0:5:9024:e82a:8fd0:afb8       no record
+ 3. HDA, chain A                     2001:30:3ff8:405:d162:233e:9b7e:feee     no record
+ 4. RAA, chain B                     2001:30:fa00:5:d18f:f62a:f870:d730       no record
+ 5. HDA, chain B                     2001:30:fa07:d005:f0d2:b5a:871b:a28      no record
+ 6. RAA, chain C                     2001:3f:0:5:80a:9f96:d49f:7057           no record
+ 7. HDA, chain C                     2001:3f:0:6405:f18a:e883:952e:9b04       no record
+ 8. UA identity 0                    2001:30:3ff8:405:d952:5618:fbc9:c3cf     snfr2025000123.driplab.example.  binding VERIFIED
+ 9. UA identity 1                    2001:30:3ff8:405:8412:4323:5d3c:a050     no record
+10. UA identity 2                    2001:30:3ff8:405:a57e:87ab:5388:cbb8     no record
+11. UA identity 3 (malformed DET)    2001:30:3ff8:405:b113:9c81:d46a:cb85     no record
+12. UA identity 4 (chain C)          2001:3f:0:6405:b6ae:eea3:d5b:898c        no record
+13. UA identity 5 (bad endorsement)  2001:30:3ff8:405:a5c7:51d1:7b8c:6526     no record
+14. Listed with no key               2001:30:3ff8:405:5c76:7822:e2ed:15bc     no record

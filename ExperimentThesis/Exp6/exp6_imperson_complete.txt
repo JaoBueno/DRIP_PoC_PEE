@@ -1,0 +1,71 @@
+Trust anchor: hierarchy.json  apex=2001:30:0:5:70f9:e8e9:b564:f448
+Ed25519 backend: cryptography 47.0.0 (OpenSSL)
+  self-test: agrees with ed25519.py on RFC 8032 §7.1 TEST 1 (valid accepted, tampered rejected)
+Time reference: '# host-time' marker unix=1792284813.712 sniffer_us=8030576313; clock tolerance 10 s
+Input format: A (air capture - DRIP_Sniffer)
+DRIP payloads decoded: 1379
+Decoded items: 13330
+
+Message-type counts:
+    8274  Authentication
+    1379  Basic ID
+    1379  Location/Vector
+    1379  Authentication (reassembled)
+     919  System
+
+Capture health: 1,379/1,382 frames intact (99.78%)
+  3 frame(s) DISCARDED - damaged in the capture pipeline (serial byte loss), not on the air.
+  These are W-CAP-01, not DRIP defects. Findings from the surrounding frames may be collateral.
+
+Identities observed: 1 drone(s)
+
+  #  DET                                      MAC(s)                packs  key from                               auth
+  1  2001:30:3ff8:405:d952:5618:fbc9:c3cf     02:44:52:49:50:00      1379  trust file (slot 0)                    OK  (231 wrap, 230 man)
+                                              02:44:52:49:50:01   
+
+Key provenance: 8 from trust file
+
+Findings by DET:
+  2001:30:3ff8:405:d952:5618:fbc9:c3cf  [trusted]  566 finding(s)
+        E-MAN-01 x113, E-MAN-02 x1, E-MAN-04 x226, E-SIG-01 x226
+  (unattributed - format/pack level)  4 finding(s)
+        W-CAP-01 x3, W-MAC-02 x1
+
+Findings:
+  E-MAN-01  x113  Manifest signature invalid (Ed25519 over VNB|VNA|Evidence|DET)
+          constraint: RFC 9575 4.4 / 4.1
+          - @ frame[28] 02:44:52:49:50:01 cnt=0x01 auth@msg[3]
+          - @ frame[40] 02:44:52:49:50:01 cnt=0x04 auth@msg[3]
+          - @ frame[52] 02:44:52:49:50:01 cnt=0x07 auth@msg[3]
+          - @ frame[64] 02:44:52:49:50:01 cnt=0x0A auth@msg[3]
+          - @ frame[76] 02:44:52:49:50:01 cnt=0x0D auth@msg[3]
+          - ... and 108 more
+  E-MAN-02  x1  Manifest ASTM hash matches no observed Message Pack (Extended Transport only; on Legacy an unmatched hash is a message not received, counted in capture health)
+          constraint: RFC 9575 4.4.3.2 / 4.4
+          - @ frame[28] 02:44:52:49:50:01 cnt=0x01 auth@msg[3]  (unmatched pack hash 0000000000000000)
+  E-MAN-04  x226  Manifest chain broken (Prev != previous Manifest's Current hash)
+          constraint: RFC 9575 4.4.2 / 4.4.3
+          - @ frame[28] 02:44:52:49:50:01 cnt=0x01 auth@msg[3]  (prev=ba2d9135f0a1adaf expected=f8386cce48c2ecbe)
+          - @ frame[31] 02:44:52:49:50:00 cnt=0x02 auth@msg[3]  (prev=0d75304495ee6b75 expected=5c9bd66c8284c7d0)
+          - @ frame[40] 02:44:52:49:50:01 cnt=0x04 auth@msg[3]  (prev=5c9bd66c8284c7d0 expected=e57f03491823377d)
+          - @ frame[43] 02:44:52:49:50:00 cnt=0x05 auth@msg[3]  (prev=e57f03491823377d expected=805f23f07574030d)
+          - @ frame[52] 02:44:52:49:50:01 cnt=0x07 auth@msg[3]  (prev=805f23f07574030d expected=3de5d2baea9f1bbf)
+          - ... and 221 more
+  E-SIG-01  x226  DRIP Wrapper signature verification failed (Ed25519)
+          constraint: RFC 9575 4.3  [extension point - see observer.py]
+          - @ frame[32] 02:44:52:49:50:01 cnt=0x02 auth@msg[3]  (3 msg(s) in evidence)
+          - @ frame[34] 02:44:52:49:50:01 cnt=0x02 auth@msg[3]  (3 msg(s) in evidence)
+          - @ frame[44] 02:44:52:49:50:01 cnt=0x05 auth@msg[3]  (3 msg(s) in evidence)
+          - @ frame[46] 02:44:52:49:50:01 cnt=0x05 auth@msg[3]  (3 msg(s) in evidence)
+          - @ frame[56] 02:44:52:49:50:01 cnt=0x08 auth@msg[3]  (3 msg(s) in evidence)
+          - ... and 221 more
+  W-CAP-01  x3  Frame discarded: byte count contradicts the sniffer's own declared length - the frame was damaged in the CAPTURE PIPELINE (serial byte loss), not on the air. NOT a DRIP or ASTM defect, and says nothing about the drone that sent it
+          constraint: DRIP_Sniffer '#F ... len=' contract. The 802.11 FCS is checked in hardware before a frame is ever delivered to the sniffer, so RF corruption cannot reach here; missing bytes mean the serial link or the logger dropped them.
+          - @ capture  (declared len=296, got 229 B)
+          - @ capture  (declared len=296, got 216 B)
+          - @ capture  (declared len=271, got 112 B)
+  W-MAC-02  x1  Same DET seen from multiple transmitter MACs - PERMITTED by ASTM (see basis); flagged only because this bench emulator uses a fixed MAC per slot, so >1 MAC means a second transmitter, a firmware fault, or a misconfiguration
+          constraint: NOT a violation. ASTM F3411-22a 5.4.5.6 NOTE 2: when using Specific Session ID Type (which DRIP is, ID Type 4), implementations MAY use random rather than static MAC addresses. Verified against the page image.
+          - @ 2001:30:3ff8:405:d952:5618:fbc9:c3cf  (2 MACs: 02:44:52:49:50:00, 02:44:52:49:50:01)
+
+Total findings: 570

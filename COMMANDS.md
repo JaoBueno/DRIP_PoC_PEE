@@ -221,7 +221,7 @@ wildcard.
 | HDA, chain B | `2001:30:fa07:d005:f0d2:b5a:871b:a28` | 1000/2000 | `hierarchy.json` | registry-only chain, not broadcast |
 | RAA, chain C | `2001:3f:0:5:80a:9f96:d49f:7057` | 15360/0 | **not** in `hierarchy.json` (air-only) | endorsed by the Apex |
 | HDA, chain C | `2001:3f:0:6405:f18a:e883:952e:9b04` | 15360/100 | **not** in `hierarchy.json` (air-only) | endorses UA 4 |
-| UA identity 0 | `2001:30:3ff8:405:d952:5618:fbc9:c3cf` | 255/14340 | `hierarchy.json` | valid; no findings |
+| UA identity 0 | `2001:30:3ff8:405:d952:5618:fbc9:c3cf` | 255/14340 | `hierarchy.json` and the collaborating registry (DNS) | valid; no findings |
 | UA identity 1 | `2001:30:3ff8:405:8412:4323:5d3c:a050` | 255/14340 | `hierarchy.json` | valid; no findings |
 | UA identity 2 | `2001:30:3ff8:405:a57e:87ab:5388:cbb8` | 255/14340 | `hierarchy.json` | valid; no findings |
 | UA identity 3 | `2001:30:3ff8:405:b113:9c81:d46a:cb85` | 255/14340 | **not** in `hierarchy.json` | MALFORMED DET: `E-LINK-01` + `E-KEY-01`; `E-DET-02` only with `--pubkey` |
@@ -310,9 +310,7 @@ public key   A6278B299968FEE58BBD7F57571C2118D0D3245D302CDB07F2C6735807958B8F
 ```
 
 **Not in the table:** `hierarchy.json` also lists
-`2001:30:3ff8:405:5c76:7822:e2ed:15bc`. It is the DET registered in the
-collaborating researcher's registry. The bench holds no key for it, so it is
-only checked against DNS.
+`2001:30:3ff8:405:5c76:7822:e2ed:15bc`, under RAA 255 / HDA 14340, with no public key. The collaborating researcher's registry holds no record for it (lookup of 2026-10-17: no PTR answer). The identity registered in that registry is UA identity 0, `2001:30:3ff8:405:d952:5618:fbc9:c3cf` (`snfr2025000123.driplab.example.`).
 
 **Reproducing these values.** Run the following in the Observer folder, with
 `det.py` and `ed25519.py`:
@@ -357,6 +355,13 @@ python arduino_logger.py --port COM3 --baud 921600 -o capture.txt
 
 Prints `Connected without resetting the board`, then one progress line per
 second giving the lines and bytes written. Ctrl+C stops it.
+
+When it reads the first frame, the logger writes one line before it:
+`# host-time unix=<host Unix time> sniffer_us=<sniffer time of that frame>`.
+The Observer uses this line to give every frame a Unix receive time, at which it
+checks the validity windows (section 3.3). Without it, the Observer refuses the
+capture unless `--capture-start` is given. `run_live.py` records through the
+logger, so its captures carry the line too.
 
 | Flag | Default | What it changes |
 |---|---|---|
@@ -502,7 +507,7 @@ The Observer detects the format by itself and refuses the file rather than guess
 
 Codes that exist only because of Bluetooth: `E-FEC-01` (ADL or padding wrong), `E-FEC-02` (parity page wrong), `E-FEC-03` (Legacy Authentication without FEC), `E-FEC-04` (FEC inside a Wi-Fi pack). `E-SEM-01` on Bluetooth means an address sent DRIP Authentication but no DRIP Basic ID anywhere in the capture.
 
-It prints, in order: the trust anchor in use, the Ed25519 backend and its self-test, the detected format, a message-type histogram, capture health, the identity table with the provenance of each key, the key-provenance summary, the findings grouped by identity, and the findings grouped by code. Exit status is 0 when there are no findings and 1 when there are any.
+It prints, in order: the trust anchor in use, the Ed25519 backend and its self-test, the detected format, a message-type histogram, capture health, the identity table with the provenance of each key, the key-provenance summary, the findings grouped by identity, and the findings grouped by code. Before decoding, it prints the time reference in use. Exit status is 0 when there are no findings, 1 when there are any, and 2 when the input cannot be used, including a capture with no time reference (section 8).
 
 | Flag | Default | What it changes |
 |---|---|---|
@@ -511,8 +516,10 @@ It prints, in order: the trust anchor in use, the Ed25519 backend and its self-t
 | `--pubkey HEX` | none | a 64-character hex key applied to any DET with no entry of its own |
 | `--no-builtin-keys` | off | do not load `--anchor` at all, so only `--keyring` and `--pubkey` supply keys |
 | `--list-keys` | off | print the keyring and exit; no capture file needed |
-| `--now UNIX` | none | reference time, which enables the freshness and validity-window checks |
-| `--max-age SEC` | none | tolerance for the freshness check; needs `--now` |
+| `--capture-start UNIX` | none | Unix time at which the first frame of the capture was received; for a capture recorded without the `# host-time` marker. Overrides the marker |
+| `--now UNIX` | none | one fixed reference time for every frame; for Formats B, W and L, which carry no receive time. An air capture judged this way prints a warning |
+| `--clock-tolerance S` | 10 | seconds added on both sides of every VNB..VNA window |
+| `--max-age SEC` | none | tolerance for the freshness check (`E-FRESH-01`), compared with the receive time of each frame |
 | `--pure-python` | off | force `ed25519.py` and ignore the accelerated backend |
 | `--verbose` | off | print every decoded item and every finding rather than the first five per code |
 | `--offer-trust` | off | after the run, ask per identity learned from the air whether to write it into `--anchor` |
@@ -529,13 +536,25 @@ python observer.py capture.txt --anchor apex-only.json
 
 Build `apex-only.json` by copying `hierarchy.json` and deleting the `raas`, `hdas` and `ua` arrays. The key-provenance summary should then read `1 from trust file, N from air`.
 
-### 3.3 Checking freshness against a reference time
+### 3.3 The time reference and the validity windows
+
+Every run checks the VNB..VNA validity window of each item at the time it was received (RFC 9575 §3.2.4.3): a DRIP Wrapper or Manifest outside its window raises `E-WIND-01` and is discarded, so it is not verified and does not count as verified evidence; a Link endorsement raises `E-LINK-04` for each reception outside its window and teaches no key when every reception falls outside. Each window is widened by `--clock-tolerance` (10 s by default).
+
+The receive time of each frame comes from one reference, taken in this order:
+
+1. `--capture-start UNIX`: the Unix time of the first frame of the file
+2. the `# host-time` line that `arduino_logger.py` writes at the first frame (section 2.1)
+3. `--now UNIX`: one fixed time for every frame (Formats B, W and L)
+
+With none of them the Observer prints `ERROR: no time reference` and exits 2. A frame whose sniffer time is earlier than the marker (the sniffer restarted after it) is refused and counted in the capture health block.
 
 ```bash
-python observer.py capture.txt --now 1782000000 --max-age 60
+python observer.py capture.txt
+python observer.py old_capture.txt --capture-start 1791841878
+python observer.py vectors.txt --now 1782000000 --max-age 60
 ```
 
-`--now` is a **Unix** timestamp. The Observer converts it to the DRIP epoch itself for the validity-window check. Supplying it against the bench's simulated clock places every window in the past, which is a deliberate negative test.
+All times are **Unix** timestamps; the Observer converts them to the DRIP epoch itself. A capture taken before `time <unix>` was sent to the transmitter carries the simulated 2026-01-01 clock, so its evidence falls outside every window judged at the real time, which is the correct verdict.
 
 ### 3.4 Reading the keyring
 
@@ -560,7 +579,7 @@ Accepts the colon form or 32 hex characters. Touches no network. Prints the deco
 ### 4.2 Against the registry
 
 ```bash
-python observer.py --dns-lookup 2001:30:3ff8:405:5c76:7822:e2ed:15bc
+python observer.py --dns-lookup 2001:30:3ff8:405:d952:5618:fbc9:c3cf
 ```
 
 Performs a reverse PTR query, then a TXT query on the name it returns, and verifies the DET-to-key binding on whatever key comes back. Needs network and `dnspython`. Offers to write the identity into `--anchor` only when the binding verified.
@@ -603,7 +622,7 @@ After the report, each identity whose key came from an endorsement is listed and
 python make_vectors.py --selftest
 ```
 
-Runs five suites, 56 checks, and exits 0 only when all five pass:
+Runs six suites, 76 checks, and exits 0 only when all six pass:
 
 | Suite | Cases | What it proves |
 |---|---|---|
@@ -612,6 +631,7 @@ Runs five suites, 56 checks, and exits 0 only when all five pass:
 | DRIP Manifest | 6 | signature, self-hash, pack and link cross-checks, and the per-aircraft ledger |
 | trust model | 5 | the five cases C1 to C5: unknown aircraft with an Apex-only trust file, Wrapper before Link, cyclic chain, unanchored Link, expired endorsement |
 | Bluetooth Legacy / FEC, Link wait, Wi-Fi gaps (session 3) | 18 | a clean Format BT capture of the §6.4 schedule; one lost Manifest or Link page rebuilt by FEC; two lost pages counted, not judged; `E-FEC-01` to `E-FEC-04`; `E-SEM-01` and `E-MAN-04` on Bluetooth; a Manifest covering a message not received; a mixed Wi-Fi + Bluetooth capture |
+| validity window | 20 | a Wrapper or Manifest received outside VNB..VNA raises `E-WIND-01` and is discarded, inside the 10 s clock tolerance it is accepted; `E-LINK-04` judged on each reception of an endorsement; the `# host-time` marker and `--capture-start`; frames before the marker refused; T19 and T20 run the command line and print its exit status (section 8) |
 
 Write the structural vectors to a file instead:
 
@@ -705,4 +725,4 @@ Repeat the last line for every stored capture, Wi-Fi and Bluetooth. Session 3 ch
 |---|---|
 | 0 | no findings, or the requested action succeeded |
 | 1 | findings were reported, or a self-test failed |
-| 2 | the input could not be used: unknown format, missing file, bad argument |
+| 2 | the input could not be used: unknown format, missing file, bad argument, or no time reference (a capture without the `# host-time` marker, run without `--capture-start` or `--now`) |

@@ -138,6 +138,23 @@ _FMT_A_META = re.compile(
 _ALL_HEX = re.compile(r'^[0-9A-Fa-f]+$')
 
 
+# Host-time marker written by arduino_logger.py when it reads the first frame:
+#     # host-time unix=1791844949.123 sniffer_us=12345678
+# It ties the sniffer clock (microseconds since the sniffer booted, the only
+# time a frame carries) to the host's Unix clock, so every frame of the capture
+# has a Unix receive time: unix + (t_us - sniffer_us) / 1e6.
+_HOST_TIME = re.compile(r'^#\s*host-time\s+unix=(\d+(?:\.\d+)?)\s+sniffer_us=(\d+)\s*$')
+
+
+def find_host_time(text):
+    """Return (host_unix, sniffer_us) from the first host-time marker, or None."""
+    for line in text.splitlines():
+        m = _HOST_TIME.match(line.strip())
+        if m:
+            return float(m.group(1)), int(m.group(2))
+    return None
+
+
 def looks_like_format_a(text):
     """True if this is a DRIP_Sniffer air capture.
 

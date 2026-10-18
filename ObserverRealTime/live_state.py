@@ -148,7 +148,7 @@ FAIL_CODES = {
     "E-SIG-01", "E-MAN-01", "E-LINK-01", "E-LINK-02", "E-DET-02",
     # content validation
     "E-LINK-04", "E-MAN-03", "E-MAN-04", "E-MAN-05", "E-FEC-01", "E-FEC-02",
-    "E-FRESH-01",
+    "E-FRESH-01", "E-WIND-01",
 }
 PENDING_LINK_CODES = {"E-LINK-03"}
 
@@ -378,8 +378,8 @@ class LiveState:
         #  None = use the real host clock (the only correct setting).
         #
         #  When set, this replaces the reference time used for TIME-BASED
-        #  CHECKS ONLY - E-LINK-04 (RFC 9575 3.2.4.3 validity window) and
-        #  E-FRESH-01. It exists because this bench's transmitter has no RTC,
+        #  CHECKS ONLY - E-LINK-04 and E-WIND-01 (RFC 9575 3.2.4.3 validity
+        #  windows) and E-FRESH-01. It exists because this bench's transmitter has no RTC,
         #  no GNSS and no NTP: drip_time.h builds every timestamp from a
         #  hardcoded SIM_DRIP_TIME_BASE, so the aircraft broadcasts a date that
         #  is months in the past and every window check fails for a reason that
@@ -520,8 +520,9 @@ class LiveState:
         for w, d in items:
             a = d.get("_auth")
             if (not a or a.get("auth_type") != 5 or a.get("sam_type") != 0x02
-                    or a.get("legacy") or not a.get("complete")):
-                continue
+                    or a.get("legacy") or not a.get("complete")
+                    or a.get("_expired")):
+                continue                # expired (E-WIND-01): discarded
             sam = a.get("sam_data", b"")
             if len(sam) < 88:
                 continue
@@ -601,6 +602,11 @@ class LiveState:
             self._absorb_points(decoded, det_bytes, mac, where, now)
 
     def _absorb_auth(self, auth, det_bytes, where, now):
+        # A Wrapper or Manifest received outside its VNB..VNA window was
+        # reported as E-WIND-01 by observer.check_evidence_window and is
+        # discarded: it adds no evidence and enters no Manifest check.
+        if auth.get("_expired"):
+            return
         # ---- RFC 9575 Appendix A evidence (session 3) ----------------------
         if det_bytes is not None:
             dr = self._drone_for(det_bytes)

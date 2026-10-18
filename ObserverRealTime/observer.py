@@ -199,6 +199,90 @@ def validate_auth(auth, where, findings, now=None, max_age=None):
 
 
 # ---------------------------------------------------------------------------
+#  Validity window (RFC 9575 3.2.4.3)
+#
+#  Every DRIP Wrapper, Manifest and Link carries VNB..VNA, the interval in which
+#  the signer vouches for it. Evidence received outside that interval has
+#  expired (or is not yet valid) and is discarded: an expired Wrapper or
+#  Manifest is not verified and does not count as verified evidence of its UA,
+#  and an expired Link endorsement teaches no key. The check needs the time at
+#  which each item was RECEIVED, and is mandatory whenever the Observer reads a
+#  capture (see TimeReference and main()).
+#
+#  CLOCK_TOLERANCE_S widens the window on both sides, to absorb the offset
+#  between the UA clock (set from the host at boot) and the Observer clock.
+# ---------------------------------------------------------------------------
+CLOCK_TOLERANCE_S = 10
+
+
+class TimeReference:
+    """Unix receive time of each frame of a capture.
+
+    A capture frame carries only the sniffer clock (t_us, microseconds since
+    the sniffer booted). One anchor ties that clock to Unix time:
+      * host_unix + sniffer_us: the '# host-time' marker written by
+        arduino_logger.py at the first frame, or --capture-start (the anchor
+        is then the first frame of the file: sniffer_us=None until it is seen)
+      * fixed: one Unix time for every frame (--now), for inputs whose frames
+        carry no receive time (Formats B, W, L and the test vectors)
+
+    at(t_us) returns None for a frame that cannot be placed in Unix time: no
+    t_us, or a t_us earlier than the anchor (the sniffer rebooted after the
+    marker, so its clock restarted from zero). Such frames are refused.
+    """
+
+    def __init__(self, fixed=None, host_unix=None, sniffer_us=None, source=""):
+        self.fixed = fixed
+        self.host_unix = host_unix
+        self.sniffer_us = sniffer_us
+        self.source = source
+
+    def at(self, t_us):
+        if self.fixed is not None:
+            return self.fixed
+        if t_us is None:
+            return None
+        if self.sniffer_us is None:
+            self.sniffer_us = t_us
+        if t_us < self.sniffer_us:
+            return None
+        return self.host_unix + (t_us - self.sniffer_us) / 1_000_000
+
+
+def check_evidence_window(auth, now, where, findings):
+    """E-WIND-01: a DRIP Wrapper (SAM 0x02) or Manifest (SAM 0x03) received
+    outside VNB..VNA (plus CLOCK_TOLERANCE_S) is marked _expired and later
+    discarded. Records the receive time as _rx_unix on every Authentication
+    message, which the Link check (E-LINK-04) uses per receipt."""
+    if now is None:
+        return
+    auth["_rx_unix"] = now
+    if auth.get("auth_type") != 5 or auth.get("sam_type") not in (0x02, 0x03):
+        return
+    sam = auth.get("sam_data", b"")
+    # Only well-formed evidence has a VNB..VNA to judge. A truncated Wrapper
+    # or a malformed Manifest is reported by its own check (E-SIG-01 "payload
+    # too short", or no Manifest decoded), and its first 8 bytes are not a
+    # window.
+    if auth["sam_type"] == 0x02 and len(sam) < 88:
+        return
+    if auth["sam_type"] == 0x03 and odid.decode_manifest_sam(sam) is None:
+        return
+    vnb = int.from_bytes(sam[0:4], "little")
+    vna = int.from_bytes(sam[4:8], "little")
+    now_drip = now - odid.EPOCH_2019
+    tol = CLOCK_TOLERANCE_S
+    if not (vnb - tol <= now_drip <= vna + tol):
+        auth["_expired"] = True
+        kind = "Wrapper" if auth["sam_type"] == 0x02 else "Manifest"
+        side = "before VNB" if now_drip < vnb - tol else "after VNA"
+        findings.append(Finding("E-WIND-01", where,
+                                f"{kind} received {side}: vnb={vnb} vna={vna} "
+                                f"received={now_drip:.0f} (DRIP epoch), "
+                                f"tolerance {tol} s; discarded"))
+
+
+# ---------------------------------------------------------------------------
 #  Keyring — DET -> Ed25519 public key
 #
 #  The observer used to hold ONE key (--pubkey) and apply it to every DET it
@@ -670,6 +754,8 @@ def check_wrapper_signature(auth, decoded_msgs, keys, where, findings, deferred=
         return
     if auth.get("auth_type") != 5 or auth.get("sam_type") != 0x02:
         return  # only DRIP Wrapper
+    if auth.get("_expired"):
+        return  # E-WIND-01 already raised; expired evidence is not verified
     sam = auth.get("sam_data", b"")
     if len(sam) < 88:
         findings.append(Finding("E-SIG-01", where, f"wrapper payload too short ({len(sam)} B)"))
@@ -733,6 +819,7 @@ def process_pack(pack_bytes, where, keys, findings, report, now=None, max_age=No
     for auth in auths:
         w = f"{where} auth@msg[{auth['start_index']}]"
         validate_auth(auth, w, findings, now=now, max_age=max_age)
+        check_evidence_window(auth, now, w, findings)
         check_wrapper_signature(auth, decoded, keys, w, findings, deferred=deferred)
         report.append((w, {"_auth": auth}))
         # E-FEC-04: RFC 9575 §6.2 - FEC MUST NOT be used in a Message Pack.
@@ -803,9 +890,14 @@ def new_legacy_context():
 
 
 def process_legacy_event(ev, ctx, keys, findings, report, now=None, max_age=None,
-                         deferred=None):
-    """Judge one event from odid.LegacyAssembler (see the block comment above)."""
+                         deferred=None, time_ref=None):
+    """Judge one event from odid.LegacyAssembler (see the block comment above).
+
+    With a `time_ref`, each event is judged at its own receive time: a message
+    at its advertisement, an Authentication message at its first page."""
     kind, obj = ev
+    if time_ref is not None:
+        now = time_ref.at(obj["t_us"] if kind == "msg" else obj["t_first_us"])
     h = ctx["health"]
     if kind == "msg":
         rec = obj
@@ -856,6 +948,7 @@ def process_legacy_event(ev, ctx, keys, findings, report, now=None, max_age=None
     if g["recovered_page"] is not None:
         auth["fec_recovered_page"] = g["recovered_page"]
     validate_auth(auth, where, findings, now=now, max_age=max_age)
+    check_evidence_window(auth, now, where, findings)
     if auth.get("sam_type") == 0x02:
         # A Legacy Wrapper carries its Evidence inline (RFC 9575 §4.3.1); the
         # verifier here implements the Extended form (§4.3.2) only. The bench
@@ -866,11 +959,12 @@ def process_legacy_event(ev, ctx, keys, findings, report, now=None, max_age=None
         ctx["auth_by_addr"].add(g["addr"])
 
 
-def finish_legacy(ctx, keys, findings, report, now=None, max_age=None, deferred=None):
+def finish_legacy(ctx, keys, findings, report, now=None, max_age=None, deferred=None,
+                  time_ref=None):
     """Close the open Authentication messages, then the per-address checks."""
     for ev in ctx["asm"].flush():
         process_legacy_event(ev, ctx, keys, findings, report, now=now,
-                             max_age=max_age, deferred=deferred)
+                             max_age=max_age, deferred=deferred, time_ref=time_ref)
     # E-SEM-01 on Legacy: there is no pack, so "in the same pack" becomes "from
     # the same sender address anywhere in the capture". Raised once per address.
     for addr in sorted(ctx["auth_by_addr"] - ctx["bid_by_addr"]):
@@ -903,7 +997,10 @@ def verify_link_chain(bes, findings, now=None, keys=None, resolver=None):
 
     Per endorsement:
       E-LINK-01  child DET must bind to child HI (cSHAKE128, via det.py)
-      E-LINK-04  BE must be within its VNB..VNA window (only if `now` given)
+      E-LINK-04  BE must be within its VNB..VNA window (+/- CLOCK_TOLERANCE_S)
+                 when received: at `now` if given (live), otherwise at each
+                 receive time recorded in be["_rx"] (batch). Usable only if
+                 at least one receipt falls inside the window.
       E-LINK-02  parent signature over the 72-byte signed region must verify
       E-LINK-03  the walk never reached this endorsement
 
@@ -939,13 +1036,20 @@ def verify_link_chain(bes, findings, now=None, keys=None, resolver=None):
         # every endorsement whenever a reference time was supplied. The default
         # of None skips the check, which is why it stayed hidden until the
         # real-time observer began passing an actual clock.
-        if now is not None:
-            now_drip = now - odid.EPOCH_2019
-            if not (be["vnb"] <= now_drip <= be["vna"]):
+        times = [now] if now is not None else [t for t in be.get("_rx", []) if t is not None]
+        if times:
+            tol = CLOCK_TOLERANCE_S
+            drip_times = [t - odid.EPOCH_2019 for t in times]
+            outside = [t for t in drip_times
+                       if not (be["vnb"] - tol <= t <= be["vna"] + tol)]
+            if outside:
                 findings.append(Finding("E-LINK-04", w,
                                         f"vnb={be['vnb']} vna={be['vna']} "
-                                        f"now={now_drip:.0f} (DRIP epoch)"))
-                ok = False
+                                        f"received={outside[0]:.0f} (DRIP epoch), "
+                                        f"{len(outside)} of {len(times)} receipt(s) "
+                                        f"outside, tolerance {tol} s"))
+                if len(outside) == len(times):
+                    ok = False
         usable[i] = ok
 
     # ---- the anchored walk --------------------------------------------------
@@ -1027,7 +1131,7 @@ def verify_link_chain(bes, findings, now=None, keys=None, resolver=None):
 
 def _collect_link_bes(report):
     """Extract unique DRIP Link BEs (SAM type 0x01) from the decoded report."""
-    seen = set()
+    seen = {}
     bes = []
     for _w, d in report:
         a = d.get("_auth")
@@ -1037,9 +1141,14 @@ def _collect_link_bes(report):
         if be is None:
             continue
         key = be["det_child"] + be["det_parent"] + be["sig"]
+        # Every receipt of the same endorsement keeps its receive time, so the
+        # validity window (E-LINK-04) is judged on each one.
         if key in seen:
+            if a.get("_rx_unix") is not None:
+                seen[key]["_rx"].append(a["_rx_unix"])
             continue
-        seen.add(key)
+        be["_rx"] = [a["_rx_unix"]] if a.get("_rx_unix") is not None else []
+        seen[key] = be
         bes.append(be)
     return bes
 
@@ -1056,6 +1165,8 @@ def _collect_manifests(report):
         a = d.get("_auth")
         if not a or a.get("sam_type") != 0x03:
             continue
+        if a.get("_expired"):
+            continue                # E-WIND-01: discarded, never verified
         m = odid.decode_manifest_sam(a.get("sam_data", b""))
         if m is None:
             continue
@@ -1120,6 +1231,8 @@ def collect_identities(report, keys=None):
         a = d.get("_auth")
         if not a or a.get("auth_type") != 5 or a.get("sam_type") != 0x02:
             continue
+        if a.get("_expired"):
+            continue                # E-WIND-01: discarded, not counted
         sam = a.get("sam_data", b"")
         if len(sam) < 88:
             continue
@@ -1326,8 +1439,14 @@ capture_health = {}
 
 
 def run(text, keys=None, now=None, max_age=None, pub=None, progress=False,
-        resolver=None):
+        resolver=None, time_ref=None):
     """Decode + validate `text`. Returns (format_label, report, findings).
+
+    `time_ref` (TimeReference) gives each frame its Unix receive time, at which
+    the validity windows are judged (E-WIND-01, E-LINK-04). A bare `now` is
+    the same as TimeReference(fixed=now). With neither, no time-based check
+    runs (library use; main() always supplies one). A frame the reference
+    cannot place in time is refused and counted (time_unreferenced).
 
     `pub` is a BACK-COMPAT shim for callers that predate the keyring
     (make_vectors.py passes pub=UA_PUB). A bare key means "apply this to any
@@ -1354,6 +1473,19 @@ def run(text, keys=None, now=None, max_age=None, pub=None, progress=False,
     report = []
     deferred = DeferredChecks()
     capture_health.clear()
+    if time_ref is None and now is not None:
+        time_ref = TimeReference(fixed=now, source="--now")
+
+    def frame_time(t_us):
+        """Unix receive time of one frame, and False when it must be refused."""
+        if time_ref is None:
+            return None, True
+        t = time_ref.at(t_us)
+        if t is None:
+            capture_health["time_unreferenced"] = capture_health.get("time_unreferenced", 0) + 1
+            return None, False
+        return t, True
+
     if odid.looks_like_format_bt(text):
         # Bluetooth Legacy capture (session 3), possibly MIXED with Wi-Fi
         # Format A segments when the sniffer switched radios mid-capture. The
@@ -1373,11 +1505,15 @@ def run(text, keys=None, now=None, max_age=None, pub=None, progress=False,
                                             f"BT {meta.get('addr')} declared len="
                                             f"{meta.get('len')}, got {got} B"))
                 for rec in recs:
+                    _t, ok = frame_time(rec["t_us"])
+                    if not ok:
+                        continue
                     ctx["health"]["t_last_us"] = max(ctx["health"].get("t_last_us", 0),
                                                      rec["t_us"])
                     for ev in ctx["asm"].feed(rec):
                         process_legacy_event(ev, ctx, keys, findings, report, now=now,
-                                             max_age=max_age, deferred=deferred)
+                                             max_age=max_age, deferred=deferred,
+                                             time_ref=time_ref)
             else:
                 a_frames, a_damaged = odid.parse_format_a(chunk)
                 for meta, got in a_damaged:
@@ -1386,6 +1522,9 @@ def run(text, keys=None, now=None, max_age=None, pub=None, progress=False,
                 capture_health["frames"] = capture_health.get("frames", 0) + len(a_frames) + len(a_damaged)
                 capture_health["damaged"] = capture_health.get("damaged", 0) + len(a_damaged)
                 for meta, frame in a_frames:
+                    t_rx, ok = frame_time(meta.get("t_us"))
+                    if not ok:
+                        continue
                     ie = odid.extract_drip_ie(frame)
                     if ie is None:
                         continue
@@ -1395,10 +1534,10 @@ def run(text, keys=None, now=None, max_age=None, pub=None, progress=False,
                     fi += 1
                     n0 = len(report)
                     process_payload(ie["payload"], where, keys, findings, report,
-                                    now=now, max_age=max_age, mac=tag, deferred=deferred)
+                                    now=t_rx, max_age=max_age, mac=tag, deferred=deferred)
                     _tag_receive_time(report, n0, meta.get("t_us"))
         finish_legacy(ctx, keys, findings, report, now=now, max_age=max_age,
-                      deferred=deferred)
+                      deferred=deferred, time_ref=time_ref)
         capture_health["bt"] = dict(ctx["health"])
         fmt = ("A+BT (mixed Wi-Fi / Bluetooth air capture - DRIP_Sniffer)"
                if capture_health.get("frames") else
@@ -1406,11 +1545,14 @@ def run(text, keys=None, now=None, max_age=None, pub=None, progress=False,
     elif odid.looks_like_format_l(text):
         fmt = "L (ESP32 serial log)"
         for entry in odid.parse_format_l(text):
+            t_rx, ok = frame_time(None)
+            if not ok:
+                continue
             where = (f"tx[{entry['tx_cnt']:#04x}] "
                      f"cnt=0x{entry['counter']:02X} "
                      f"cycle={entry['cycle']}")
             process_payload(entry["pack_bytes"], where, keys,
-                            findings, report, now=now, max_age=max_age,
+                            findings, report, now=t_rx, max_age=max_age,
                             deferred=deferred)
     elif odid.looks_like_format_a(text):
         fmt = "A (air capture - DRIP_Sniffer)"
@@ -1425,6 +1567,9 @@ def run(text, keys=None, now=None, max_age=None, pub=None, progress=False,
         capture_health["frames"] = len(a_frames) + len(a_damaged)
         capture_health["damaged"] = len(a_damaged)
         for fi, (meta, frame) in enumerate(a_frames):
+            t_rx, ok = frame_time(meta.get("t_us"))
+            if not ok:
+                continue          # no receive time: refused, counted
             ie = odid.extract_drip_ie(frame)
             if ie is None:
                 continue          # e.g. a frame truncated when capture stopped
@@ -1436,23 +1581,29 @@ def run(text, keys=None, now=None, max_age=None, pub=None, progress=False,
             where = f"frame[{fi}] {tag} cnt=0x{ie['counter']:02X}"
             n0 = len(report)
             process_payload(ie["payload"], where, keys, findings, report,
-                            now=now, max_age=max_age, mac=tag, deferred=deferred)
+                            now=t_rx, max_age=max_age, mac=tag, deferred=deferred)
             _tag_receive_time(report, n0, meta.get("t_us"))
             if progress and fi and fi % 2000 == 0:
                 print(f"# {fi} frames...", file=sys.stderr, flush=True)
     elif odid.looks_like_format_w(text):
         fmt = "W (Wireshark bytes export)"
         for fi, frame in enumerate(odid.parse_format_w(text)):
+            t_rx, ok = frame_time(None)
+            if not ok:
+                continue
             ie = odid.extract_drip_ie(frame)
             if ie is None:
                 continue
             where = f"frame[{fi}] cnt=0x{ie['counter']:02X}"
-            process_payload(ie["payload"], where, keys, findings, report, now=now,
+            process_payload(ie["payload"], where, keys, findings, report, now=t_rx,
                             max_age=max_age, deferred=deferred)
     elif odid.looks_like_format_b(text):
         fmt = "B (flat hex)"
         for ri, (rec, _expect) in enumerate(odid.parse_format_b(text)):
-            process_payload(rec, f"record[{ri}]", keys, findings, report, now=now,
+            t_rx, ok = frame_time(None)
+            if not ok:
+                continue
+            process_payload(rec, f"record[{ri}]", keys, findings, report, now=t_rx,
                             max_age=max_age, deferred=deferred)
     else:
         raise UnknownFormatError(odid.diagnose_format(text))
@@ -1462,7 +1613,8 @@ def run(text, keys=None, now=None, max_age=None, pub=None, progress=False,
     # judge the evidence, with every key the walk has learned in hand. Running
     # the walk after the decode pass is what makes a Wrapper that arrived before
     # its DRIP Link verifiable at all.
-    verify_link_chain(_collect_link_bes(report), findings, now=now, keys=keys,
+    # now=None: each endorsement is judged at its own receive times (be["_rx"]).
+    verify_link_chain(_collect_link_bes(report), findings, now=None, keys=keys,
                       resolver=resolver)
     # DRIP Manifest verification: signature, self-hash, pack/link cross-check, chaining
     verify_manifests(report, findings, keys=keys, now=now, deferred=deferred)
@@ -1592,6 +1744,11 @@ def print_report(fmt, report, findings, verbose=False, keys=None):
                          f"(RFC 9575 4.3.1 form not implemented)")
         for e in extra:
             print(f"  {e}")
+
+    if capture_health.get("time_unreferenced"):
+        print(f"\n  {capture_health['time_unreferenced']:,} frame(s) REFUSED without a "
+              f"receive time: no sniffer time, or a sniffer time earlier than the "
+              f"time reference (the sniffer restarted after it). Not judged.")
 
     # Identity report. Raises W-MAC-02, so it must run before findings are
     # grouped for printing.
@@ -2018,6 +2175,7 @@ def _offer_trust(keys, anchor_path):
 
 
 def main(argv=None):
+    global CLOCK_TOLERANCE_S
     ap = argparse.ArgumentParser(description="Offline DRIP/ASTM observer")
     ap.add_argument("file", nargs="?",
                     help="capture file - Format L (ESP32 serial log), "
@@ -2069,7 +2227,19 @@ def main(argv=None):
     ap.add_argument("--pure-python", action="store_true",
                     help="force the ed25519.py reference implementation "
                          "(~1300x slower; use to cross-check a result)")
-    ap.add_argument("--now", type=int, help="reference Unix time for freshness check")
+    ap.add_argument("--now", type=int,
+                    help="fixed Unix time at which every frame is judged (freshness "
+                         "and validity windows). For inputs without receive times "
+                         "(Formats B, W, L); an air capture uses its '# host-time' "
+                         "marker or --capture-start instead")
+    ap.add_argument("--capture-start", type=float, metavar="UNIX",
+                    help="Unix time at which the FIRST frame of the capture was "
+                         "received; for a capture recorded without the logger's "
+                         "'# host-time' marker. Overrides the marker")
+    ap.add_argument("--clock-tolerance", type=int, default=CLOCK_TOLERANCE_S,
+                    metavar="S",
+                    help=f"seconds added on both sides of every VNB..VNA window "
+                         f"(default {CLOCK_TOLERANCE_S})")
     ap.add_argument("--max-age", type=int, help="max allowed |age| in seconds (with --now)")
     ap.add_argument("--verbose", action="store_true", help="print every decoded item")
     args = ap.parse_args(argv)
@@ -2191,10 +2361,41 @@ def main(argv=None):
     # registry supply an Apex, RAA or HDA anchor the capture never carried.
     resolver = dns_fb.resolve_parent if dns_fb is not None else None
 
+    # ---- time reference: mandatory (validity windows, RFC 9575 3.2.4.3) ----
+    # Precedence: --capture-start, then the logger's '# host-time' marker, then
+    # --now. Without any of them the windows cannot be judged, and the run is
+    # refused rather than reported as if every item were valid.
+    CLOCK_TOLERANCE_S = args.clock_tolerance
+    air = odid.looks_like_format_bt(text) or (not odid.looks_like_format_l(text)
+                                              and odid.looks_like_format_a(text))
+    marker = odid.find_host_time(text)
+    if args.capture_start is not None:
+        time_ref = TimeReference(host_unix=args.capture_start,
+                                 source=f"--capture-start {args.capture_start:.3f} "
+                                        f"(first frame)")
+    elif marker is not None:
+        time_ref = TimeReference(host_unix=marker[0], sniffer_us=marker[1],
+                                 source=f"'# host-time' marker unix={marker[0]:.3f} "
+                                        f"sniffer_us={marker[1]}")
+    elif args.now is not None:
+        time_ref = TimeReference(fixed=args.now, source=f"--now {args.now} (fixed)")
+        if air:
+            print("WARNING: air capture without a '# host-time' marker; every frame "
+                  "is judged at the fixed --now. Use --capture-start for "
+                  "per-frame receive times.")
+    else:
+        print("ERROR: no time reference. The validity windows (VNB..VNA, RFC 9575 "
+              "3.2.4.3) are checked on every run. Record the capture with "
+              "arduino_logger.py (it writes a '# host-time' marker), or give "
+              "--capture-start UNIX (air capture) or --now UNIX (Formats B, W, L).")
+        return 2
+    print(f"Time reference: {time_ref.source}; clock tolerance "
+          f"{CLOCK_TOLERANCE_S} s")
+
     try:
         fmt, report, findings = run(text, keys=keys, now=args.now,
                                     max_age=args.max_age, progress=True,
-                                    resolver=resolver)
+                                    resolver=resolver, time_ref=time_ref)
     except UnknownFormatError as e:
         # Refuse rather than guess. See run()'s docstring.
         print(f"ERROR: {e}")
